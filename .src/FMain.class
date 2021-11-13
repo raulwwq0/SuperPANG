@@ -132,7 +132,7 @@ Public Sub Clock_Timer()
   currentArrowDeleted = False
   
   ' The following lines create a lot of circles
-  If (circleSummonTime = 100 And circleArray.Length < 1) Then
+  If (circleSummonTime = 100) Then
     circle = New Circle(Rand(0, Board.Width - 100), 100, 100)
     circleArray.Add(circle)
     circleSummonTime = 0
@@ -180,6 +180,7 @@ Public Sub Clock_Timer()
 
 End
 
+' Create 2 small circles in the position where the original circle was
 Private Sub divideCircle(circle As Circle, index As Integer)
 
   Dim newCircle1 As Circle
@@ -210,5 +211,5 @@ End
 '
 ' - [SOLVED] Sometimes the player doesn't die when a ball hit him. Probably a bad hitbox when checking it.
 '
-' - Sometime the smallest circles doesn't disappear when an arrow hit them, probably a bad hitbox checking
+' - [SOLVED] Sometimes the smallest circles doesn't disappear when an arrow hit them, probably a bad hitbox checking
 
