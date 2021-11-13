@@ -1,0 +1,187 @@
+' Gambas class file
+
+' State
+Private player As Player
+Private arrow As Arrow
+Private circle As Circle
+Private arrowArray As New Arrow[]
+Private circleArray As New Circle[]
+Private circleSummonTime As Integer
+
+' Behaviour
+
+' Things that will happen when the start button is clicked
+Public Sub StartButton_Click()
+  ' Create a circle
+  'circle = New Circle(Board.Width / 2, 0, 100)
+  
+  ' Clear both arrays (so important when restarting a game after losing)
+  circleArray.Clear()
+  arrowArray.Clear()
+  
+  ' Clear the status label
+  StatusLabel.Text = ""
+  
+  ' Create the player
+  player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 50, 30, 50)
+  
+  ' Set the summon time to 50 to spawn a circle as soon as the game start
+  circleSummonTime = 50
+  
+  ' Start the game clock
+  Clock.Start()
+  
+  ' Disable the start button once it is clicked
+  StartButton.Enabled = False
+  
+  ' Enable the pause button when the game starts
+  PauseButton.Enabled = True
+  
+  ' Set the focus on the board
+  Board.SetFocus()
+  
+End
+
+' Things that will happen when the pause button is clicked
+Public Sub PauseButton_Click()
+
+  If (Clock.Enabled) Then
+      'Pause when playing
+      PauseButton.Text = "Continue"
+      StatusLabel.Text = "PAUSE"
+      Clock.Stop()
+  Else
+      'Continue when pausing
+      PauseButton.Text = "Pause"
+      Clock.Start()
+      ' Clear the status label
+      StatusLabel.Text = ""
+      Board.SetFocus()  
+  Endif
+    
+
+End
+
+Public Sub Board_Draw()
+  Dim i As Integer
+
+  ' Paint the player if exists to avoid errors
+  If (player <> Null) Then
+    player.paintPlayer(Board)
+  Endif
+  
+  ' Paint arrows when there is at least 1 arrow
+  If (arrow <> Null) Then 
+    ' Use for to paint all arrows from the array
+    For i = 0 To arrowArray.Length - 1
+      arrowArray[i].paintArrow(Board)
+    Next
+  Endif
+  
+  ' Paint circles if exist at least 1
+  If (circle <> Null) Then 
+    ' This lines are for painting an entire array of circles
+    For i = 0 To circleArray.Length - 1
+      circleArray[i].paintCircle(Board)
+    Next
+    
+    ' This line paint a circle
+    'circle.paintCircle(Board)
+  Endif
+  
+End
+
+' Controller for keys pressed
+Public Sub Board_KeyPress()
+  ' Create a variable for the key that is being pressed
+  Dim myKey As String
+
+ ' Assing the key value (uppercase) to the previous variable
+  myKey = UCase$(Key.Text)
+  
+  ' If the key is "A" or "D" move the player
+  If (myKey = "A" Or myKey = "D") Then
+    player.Move(myKey, Board)
+    
+  ' If the key is "W" create an arrow and add it to the arrow array
+  Else If (myKey = "W") Then 
+    arrow = New Arrow(player.getX() + 5, player.getY() - 10, 10)
+    player.shootArrow(arrow, arrowArray)
+  Endif
+  
+
+End
+
+Public Sub Clock_Timer()
+  Dim i As Integer
+  Dim j As Integer
+  
+  ' The following lines create a lot of circles
+  If (circleSummonTime = 50) Then
+    circle = New Circle(Rand(0, Board.Width), 0, 100)
+    circleArray.Add(circle)
+    circleSummonTime = 0
+  Endif
+  
+  ' If an arrow exist, "shoot it" (move it to the top of the board) 
+  If (arrow <> Null) Then 
+    For i = 0 To arrowArray.Length - 1
+      arrowArray[i].Move()
+      
+      ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
+      If (arrowArray[i].hitBorder() = True) Then 
+        arrowArray.Pop() ' <- The first arrow to hit the border will be ALWAYS the last one in the array, so we can use Pop
+      Else 
+        ' If the arrow hit a circle, the circle will dissapear (for now...) and the arrow will be destroyed
+        j = 0
+        While (j < circleArray.Length And arrowArray.Length > 0)
+          If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
+            circleArray.Remove(j)
+            arrowArray.Remove(i)
+          Endif
+          j += 1
+        Wend 
+      Endif
+      
+    Next    
+  Endif
+  
+  ' The following lines create a lot of circles and move all of them
+  ' If (circleSummonTime = 100) Then
+  '   circle = New Circle(Rand(0, Board.Width), 0, 100)
+  '   circleArray.Add(circle)
+  '   circleSummonTime = 0
+  ' Endif
+  
+  ' Moves all the circle from the array
+  For i = 0 To circleArray.Length - 1
+    If (player.isDead(circleArray[i]) = True) Then
+      Clock.Stop()
+      StartButton.Enabled = True
+      PauseButton.Enabled = False
+      StatusLabel.Text = "GAME OVER"
+    Else 
+      circleArray[i].Move(Board)
+    Endif
+  Next    
+
+  ' Move a circle
+  'circle.Move(Board)
+  
+  ' Increase the circle summon time in 1
+  circleSummonTime += 1
+  
+  ' Refresh the board to make the changes to take effect
+  Board.Refresh()
+
+End
+
+' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
+'
+' - Shooting more than 1 arrow at the same time can crash the game when one of the arrows hit a circle
+'   or even without reason (out of bounds error in Clock_Timer line 120 or 129).
+'
+' - If a circle spawn near the right border of the board, it get stuck there and only can move itself
+'   up and down.
+'
+' - Sometimes the player doesn't die when a ball hit him. Probably a bad hitbox when checking it.

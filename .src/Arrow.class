@@ -1,0 +1,70 @@
+' Gambas class file
+
+' State
+
+' Initial posX and posY
+Private posX As Integer
+Private posY As Integer
+Private radius As Integer
+Private arrowColor As Integer
+
+' Behaviour
+
+' Builder
+Public Sub _new(x As Integer, y As Integer, r As Integer)
+  
+  posX = x
+  posY = y
+  radius = r
+  arrowColor = Color.RGB(255, 0, 0)
+  
+End
+
+' Move the arrow to the top of the board
+Public Sub Move()
+  
+  posY = posY - radius * 2
+  
+End
+
+' Paint arrow (the arrow hitbox will be a circle, at least for now...)
+Public Sub paintArrow(board As DrawingArea)
+  
+  Paint.Begin(board)
+  Paint.Brush = Paint.Color(arrowColor)
+  Paint.Ellipse(posX, posY, radius * 2, radius * 2)
+  Paint.Fill()
+  Paint.End
+  
+End
+
+' Check if an arrow hit the top border of the board
+Public Function hitBorder() As Boolean
+  
+  Dim result As Boolean
+  
+  If (posY <= 0) Then 
+    result = True
+  Else 
+    result = False
+  Endif
+  
+  Return result
+  
+End
+
+' Check if the arrow hit a circle
+Public Function hitCircles(circle As Circle) As Boolean
+  
+  Dim result As Boolean
+  
+  If ((posX >= circle.getX() And (posX + radius * 2) <= (circle.getX() + circle.getDiameter())) And (posY <= (circle.getY() + circle.getDiameter()))) Then
+    result = True
+  Else 
+    result = False
+  Endif
+  
+  Return result
+  
+End
+

@@ -1,0 +1,113 @@
+' Gambas class file
+
+' State
+
+' Position X and Y
+Private posX As Integer
+Private posY As Integer
+
+' Color (It will be changed for a texture later)
+Private playerColor As Integer
+
+' Player hitbox dimensions
+Private hitboxWidth As Integer
+Private hitboxHeight As Integer
+
+
+' Behaviour
+
+' Builder
+Public Sub _new(x As Integer, y As Integer, w As Integer, h As Integer)
+  
+  posX = x
+  posY = y
+  hitboxWidth = w
+  hitboxHeight = h
+  playerColor = Color.RGB(0, 255, 0)
+  
+End
+
+' Move
+Public Sub Move(dir As String, board As DrawingArea)
+  
+  If dir = "A" Or dir = "a" Then 
+    posX = posX - hitboxWidth
+  Else If dir = "D" Or dir = "d" Then 
+    posX = posX + hitboxWidth
+  Endif
+  
+  If (posX < 0) Then
+    posX = 0
+  Else If (posX + hitboxWidth > board.Width)
+    posX = board.Width - hitboxWidth
+  Endif
+  
+End
+
+' Paint a player
+Public Sub paintPlayer(board As DrawingArea)
+  
+  Paint.Begin(board)
+  Paint.Brush = Paint.Color(playerColor)
+  Paint.Rectangle(posX, posY, hitboxWidth, hitboxHeight)
+  Paint.Fill()
+  Paint.End
+  
+End
+
+' Shoot an arrow
+Public Sub shootArrow(arrow As Arrow, arrowArray As Arrow[])
+  
+    
+    ' Limit the amount of arrows that can exist at the same time (2)
+    If (arrowArray.Length >= 2) Then
+      arrowArray.Pop()
+    Endif
+    arrowArray.Add(arrow, 0)
+  
+End
+
+' Check if the player is dead (when a circle touch it)
+Public Function isDead(circle As Circle) As Boolean
+  
+  Dim result As Boolean
+  
+  If ((posX >= circle.getX() And (posX + hitboxWidth) <= (circle.getX() + circle.getDiameter())) And (posY <= (circle.getY() + circle.getDiameter()))) Then
+    result = True
+  Else 
+    result = False
+  Endif
+  
+  Return result
+  
+End
+
+
+' Getters
+' Get X
+Public Function getX() As Integer
+  
+  Return posX
+  
+End
+
+' Get Y
+Public Function getY() As Integer
+  
+  Return posY
+  
+End
+
+' Get width
+Public Function getWidth() As Integer
+  
+  Return hitboxWidth
+  
+End
+
+' Get height
+Public Function getHeight() As Integer
+  
+  Return hitboxHeight
+  
+End

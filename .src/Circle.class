@@ -1,0 +1,96 @@
+' Gambas class file
+
+' State
+
+' PosX: Horizontal position
+Private posX As Float
+
+' PosY: Vertical position
+Private posY As Float
+
+' Diameter: Diameter in px
+Private diameter As Integer
+
+' Color: Background color
+Private circleColor As Integer
+
+Private gravity As Float
+Private moveInX As Float
+Private moveInY As Float
+
+' Behaviour
+
+' Builder
+Public Sub _new(x As Integer, y As Integer, d As Integer)
+
+ posX = x
+ posY = y
+ diameter = d
+ circleColor = Color.RGB(0, 0, 255)
+ moveInX = 3.0
+ moveInY = 3.0
+ gravity = 0.5
+End
+
+' Paint a circle
+Public Sub paintCircle(board As DrawingArea)
+  
+  Paint.Begin(board)
+  Paint.Brush = Paint.Color(circleColor)
+  Paint.Ellipse(posX, posY, diameter, diameter)
+  Paint.Fill()
+  Paint.End
+  
+End
+
+' Move
+Public Sub Move(board As DrawingArea)
+  
+  posX += moveInX
+  posY += moveInY
+  moveInY += gravity
+
+  ' Lateral walls
+  
+  If (posX + diameter > board.Width Or posX < 0) Then
+    moveInX *= -1
+  Endif
+  
+  
+  ' Floor
+  If (posY + diameter > board.Height) Then
+    moveInY -= gravity
+    moveInY *= -1
+    
+  Endif
+  
+End
+
+
+' Getters
+' Get X
+Public Function getX() As Integer
+  
+  Return posX
+  
+End
+
+' Get Y
+Public Function getY() As Integer
+  
+  Return posY
+  
+End
+
+'Get side
+Public Function getDiameter() As Integer
+
+  Return diameter
+  
+End
+
+Public Function getColor() As Integer
+ 
+  Return circleColor
+ 
+End
