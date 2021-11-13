@@ -115,6 +115,10 @@ End
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
+  Dim currentArrowDeleted As Boolean
+  
+  ' This variable will help me to exit the loop if the arrow is destroyed, to avoid out of bounds errors
+  currentArrowDeleted = False
   
   ' The following lines create a lot of circles
   If (circleSummonTime = 50) Then
@@ -138,11 +142,22 @@ Public Sub Clock_Timer()
           If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
+            
+            ' Set the arrow deleted var to true
+            currentArrowDeleted = True
+            
+            ' Leave this while
+            Break 
           Endif
           j += 1
         Wend 
       Endif
       
+      ' If the current arrow was deleted, it will leave the for loop
+      If (currentArrowDeleted) Then
+        Break 
+        currentArrowDeleted = False
+      Endif
     Next    
   Endif
   
@@ -196,8 +211,8 @@ End
 
 ' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
 '
-' - Shooting more than 1 arrow at the same time can crash the game when one of the arrows hit a circle
-'   or even without reason (out of bounds error in Clock_Timer.
+' - [SOLVED] Shooting more than 1 arrow at the same time can crash the game when one of the arrows hit a circle
+'   or even without reason (out of bounds error in Clock_Timer).
 '
 ' - [SOLVED] If a circle spawn near the right border of the board, it get stuck there and only can move itself
 '   up and down.
