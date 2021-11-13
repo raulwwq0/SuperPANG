@@ -15,8 +15,8 @@ Private diameter As Integer
 Private circleColor As Integer
 
 Private gravity As Float
-Private moveInX As Float
-Private moveInY As Float
+Private speedX As Float
+Private speedY As Float
 
 ' Behaviour
 
@@ -27,8 +27,8 @@ Public Sub _new(x As Integer, y As Integer, d As Integer)
  posY = y
  diameter = d
  circleColor = Color.RGB(0, 0, 255)
- moveInX = 3.0
- moveInY = 3.0
+ speedX = 3.0
+ speedY = 3.0
  gravity = 0.5
 End
 
@@ -46,21 +46,21 @@ End
 ' Move
 Public Sub Move(board As DrawingArea)
   
-  posX += moveInX
-  posY += moveInY
-  moveInY += gravity
+  posX += speedX
+  posY += speedY
+  speedY += gravity
 
   ' Lateral walls
   
   If (posX + diameter > board.Width Or posX < 0) Then
-    moveInX *= -1
+    speedX *= -1
   Endif
   
   
   ' Floor
   If (posY + diameter > board.Height) Then
-    moveInY -= gravity
-    moveInY *= -1
+    speedY -= gravity
+    speedY *= -1
     
   Endif
   
@@ -89,8 +89,25 @@ Public Function getDiameter() As Integer
   
 End
 
+'Get color
 Public Function getColor() As Integer
  
   Return circleColor
  
 End
+
+' Get speed in Y
+Public Function getSpeedY() As Float
+  
+  Return speedY
+  
+End
+
+' Setters
+' Set speed in Y
+Public Sub setSpeedY(newSpeedY As Float)
+
+  speedY = newSpeedY
+  
+End
+
