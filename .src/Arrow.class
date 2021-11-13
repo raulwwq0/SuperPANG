@@ -58,7 +58,12 @@ Public Function hitCircles(circle As Circle) As Boolean
   
   Dim result As Boolean
   
-  If ((posX >= circle.getX() And (posX + radius * 2) <= (circle.getX() + circle.getDiameter())) And (posY <= (circle.getY() + circle.getDiameter()))) Then
+  '((posX >= circle.getX() And (posX + radius * 2) <= (circle.getX() + circle.getDiameter())) And (posY <= (circle.getY() + circle.getDiameter())))
+  
+  If ((posX >= circle.getX() And posX <= circle.getX() + circle.getDiameter() Or
+      posX + radius * 2 >= circle.getX() And posX + radius * 2 <= circle.getX() + circle.getDiameter()) And
+      (posY >= circle.getY() And posY <= circle.getY() + circle.getDiameter() Or
+      posY + radius * 2 >= circle.getY() And posY + radius * 2 <= circle.getY() + circle.getDiameter())) Then
     result = True
   Else 
     result = False
