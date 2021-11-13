@@ -117,6 +117,17 @@ Public Sub Clock_Timer()
   Dim j As Integer
   Dim currentArrowDeleted As Boolean
   
+  For i = 0 To circleArray.Length - 1
+    If (player.isDead(circleArray[i]) = True) Then
+      Clock.Stop()
+      StartButton.Enabled = True
+      PauseButton.Enabled = False
+      StatusLabel.Text = "GAME OVER"
+    Else 
+      circleArray[i].Move(Board)
+    Endif
+  Next
+  
   ' This variable will help me to exit the loop if the arrow is destroyed, to avoid out of bounds errors
   currentArrowDeleted = False
   
@@ -160,28 +171,6 @@ Public Sub Clock_Timer()
       Endif
     Next    
   Endif
-  
-  ' The following lines create a lot of circles and move all of them
-  ' If (circleSummonTime = 100) Then
-  '   circle = New Circle(Rand(0, Board.Width), 0, 100)
-  '   circleArray.Add(circle)
-  '   circleSummonTime = 0
-  ' Endif
-  
-  ' Moves all the circle from the array
-  For i = 0 To circleArray.Length - 1
-    If (player.isDead(circleArray[i]) = True) Then
-      Clock.Stop()
-      StartButton.Enabled = True
-      PauseButton.Enabled = False
-      StatusLabel.Text = "GAME OVER"
-    Else 
-      circleArray[i].Move(Board)
-    Endif
-  Next
-  
-  ' Move a circle
-  'circle.Move(Board)
   
   ' Increase the circle summon time in 1
   circleSummonTime += 1
