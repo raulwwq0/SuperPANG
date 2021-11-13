@@ -117,7 +117,7 @@ Public Sub Clock_Timer()
   Dim j As Integer
   
   ' The following lines create a lot of circles
-  If (circleSummonTime = 100) Then
+  If (circleSummonTime = 50) Then
     circle = New Circle(Rand(0, Board.Width), 0, 100)
     circleArray.Add(circle)
     circleSummonTime = 0
@@ -185,11 +185,11 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   
   circleArray.Remove(index)
   
-  If (newDiameter >= 25) Then
+  If (newDiameter >= 25) Then           ' <- The default diameter is 100, so 25 allow me to create up to 3 different sizes of circles
     newCircle1 = New Circle(circle.getX() - circle.getDiameter(), circle.getY(), newDiameter)
     newCircle2 = New Circle(circle.getX(), circle.getY(), newDiameter)
-    circleArray.Add(newCircle1, 0)
-    circleArray.Add(newCircle2, 0)
+    circleArray.Add(newCircle1, circleArray.Length - 1)
+    circleArray.Add(newCircle2, circleArray.Length - 1)
   Endif
 End
 
