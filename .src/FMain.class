@@ -212,4 +212,8 @@ End
 ' - [SOLVED] Sometimes the player doesn't die when a ball hit him. Probably a bad hitbox when checking it.
 '
 ' - [SOLVED] Sometimes the smallest circles doesn't disappear when an arrow hit them, probably a bad hitbox checking
+'
+' - When you destroy a circle which is moving up, the new little circles can go down with an insane speed. A possible
+'   solution could be check if the original circle speed in Y is positive or negative and then change the speed in the
+'   little ones.
 
