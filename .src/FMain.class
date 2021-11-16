@@ -12,9 +12,6 @@ Private circleSummonTime As Integer
 
 ' Things that will happen when the start button is clicked
 Public Sub StartButton_Click()
-  ' Create a circle
-  'circle = New Circle(Board.Width / 2, 0, 100)
-  
   ' Clear both arrays (so important when restarting a game after losing)
   circleArray.Clear()
   arrowArray.Clear()
@@ -84,9 +81,6 @@ Public Sub Board_Draw()
     For i = 0 To circleArray.Length - 1
       circleArray[i].paintCircle(Board)
     Next
-    
-    ' This line paint a circle
-    'circle.paintCircle(Board)
   Endif
   
 End
@@ -115,10 +109,8 @@ End
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
-  'Dim currentArrowDeleted As Boolean
-  ' Dim arrowArrayLength As Integer
-  ' Dim circleArrayLength As Integer  
   
+  ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
     If (player.isDead(circleArray[i]) = True) Then
       Clock.Stop()
@@ -130,18 +122,12 @@ Public Sub Clock_Timer()
     Endif
   Next
   
-  ' This variable will help me to exit the loop if the arrow is destroyed, to avoid out of bounds errors
-  'currentArrowDeleted = False
-  
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
     circle = New Circle(Rand(0, Board.Width - 100), 100, 100)
     circleArray.Add(circle)
     circleSummonTime = 0
   Endif
-  
-  ' arrowArrayLength = arrowArray.Length
-  ' circleArrayLength = circleArray.Length
   
   ' If an arrow exist, "shoot it" (move it to the top of the board) 
   If (arrow <> Null) Then 
@@ -157,15 +143,12 @@ Public Sub Clock_Timer()
         j = 0
         While (j < circleArray.Length And arrowArray.Length > 0)
           If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
+            
+            ' Divide the circle and destroy the arrow
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
             
-            ' Set the arrow deleted var to true
-            ' currentArrowDeleted = True
-            ' 
-            ' ' Leave this while
-            ' Break 
-            
+            ' Reduce both counters to avoid out of bounds errors
             i -= 1
             j -= 1
           Endif
@@ -173,12 +156,6 @@ Public Sub Clock_Timer()
         Wend 
         i += 1
       Endif
-      
-      ' If the current arrow was deleted, it will leave the for loop
-      ' If (currentArrowDeleted) Then
-      '   Break 
-      '   currentArrowDeleted = False
-      ' Endif
     Wend    
   Endif
   
@@ -198,11 +175,14 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   Dim newDiameter As Integer
   newDiameter = circle.getDiameter() / 2
   
+  ' Remove the circle from the array. This won't affect to the following steps because we also have the circle as a parameter
   circleArray.Remove(index)
   
   If (newDiameter >= 25) Then           ' <- The default diameter is 100, so 25 allow me to create up to 3 different sizes of circles
     newCircle1 = New Circle(circle.getX() - circle.getDiameter(), circle.getY(), newDiameter)
     newCircle2 = New Circle(circle.getX(), circle.getY(), newDiameter)
+    
+    ' Check the vertical speed of the original circle before applying the speed (movement) to the new circles
     If (circle.getSpeedY() < 0) Then
       newCircle1.setSpeedY(circle.getSpeedY())
       newCircle2.setSpeedY(circle.getSpeedY())
@@ -211,6 +191,7 @@ Private Sub divideCircle(circle As Circle, index As Integer)
       newCircle2.setSpeedY(-circle.getSpeedY())
     Endif
     
+    ' Check the horizontal speed to make divided circles go to diferent directions
     If (circle.getSpeedX() < 0) Then
       newCircle1.setSpeedX(circle.getSpeedX())
       newCircle2.setSpeedX(-circle.getSpeedX())
@@ -219,6 +200,7 @@ Private Sub divideCircle(circle As Circle, index As Integer)
       newCircle2.setSpeedX(circle.getSpeedX())
     Endif
 
+    ' Add the 2 new circles to the circles array
     circleArray.Add(newCircle1, circleArray.Length - 1)
     circleArray.Add(newCircle2, circleArray.Length - 1)
   Endif
@@ -237,7 +219,7 @@ End
 '
 ' - [SOLVED] Sometimes the smallest circles doesn't disappear when an arrow hit them, probably a bad hitbox checking
 '
-' - When you destroy a circle which is moving up, the new little circles can go down with an insane speed. A possible
+' - [SOLVED] When you destroy a circle which is moving up, the new little circles can go down with an insane speed. A possible
 '   solution could be check if the original circle speed in Y is positive or negative and then change the speed in the
 '   little ones.
 
