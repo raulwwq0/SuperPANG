@@ -103,6 +103,13 @@ Public Function getSpeedY() As Float
   
 End
 
+' Get speed in X
+Public Function getSpeedX() As Float
+  
+  Return speedX
+  
+End
+
 ' Setters
 ' Set speed in Y
 Public Sub setSpeedY(newSpeedY As Float)
@@ -111,3 +118,9 @@ Public Sub setSpeedY(newSpeedY As Float)
   
 End
 
+' Set speed in X
+Public Sub setSpeedX(newSpeedX As Float)
+
+  speedX = newSpeedX
+  
+End

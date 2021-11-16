@@ -115,7 +115,9 @@ End
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
-  Dim currentArrowDeleted As Boolean
+  'Dim currentArrowDeleted As Boolean
+  ' Dim arrowArrayLength As Integer
+  ' Dim circleArrayLength As Integer  
   
   For i = 0 To circleArray.Length - 1
     If (player.isDead(circleArray[i]) = True) Then
@@ -129,7 +131,7 @@ Public Sub Clock_Timer()
   Next
   
   ' This variable will help me to exit the loop if the arrow is destroyed, to avoid out of bounds errors
-  currentArrowDeleted = False
+  'currentArrowDeleted = False
   
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
@@ -138,9 +140,13 @@ Public Sub Clock_Timer()
     circleSummonTime = 0
   Endif
   
+  ' arrowArrayLength = arrowArray.Length
+  ' circleArrayLength = circleArray.Length
+  
   ' If an arrow exist, "shoot it" (move it to the top of the board) 
   If (arrow <> Null) Then 
-    For i = 0 To arrowArray.Length - 1
+    i = 0
+    While (i < arrowArray.Length)
       arrowArray[i].Move()
       
       ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
@@ -155,21 +161,25 @@ Public Sub Clock_Timer()
             arrowArray.Remove(i)
             
             ' Set the arrow deleted var to true
-            currentArrowDeleted = True
+            ' currentArrowDeleted = True
+            ' 
+            ' ' Leave this while
+            ' Break 
             
-            ' Leave this while
-            Break 
+            i -= 1
+            j -= 1
           Endif
           j += 1
         Wend 
+        i += 1
       Endif
       
       ' If the current arrow was deleted, it will leave the for loop
-      If (currentArrowDeleted) Then
-        Break 
-        currentArrowDeleted = False
-      Endif
-    Next    
+      ' If (currentArrowDeleted) Then
+      '   Break 
+      '   currentArrowDeleted = False
+      ' Endif
+    Wend    
   Endif
   
   ' Increase the circle summon time in 1
@@ -193,8 +203,22 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   If (newDiameter >= 25) Then           ' <- The default diameter is 100, so 25 allow me to create up to 3 different sizes of circles
     newCircle1 = New Circle(circle.getX() - circle.getDiameter(), circle.getY(), newDiameter)
     newCircle2 = New Circle(circle.getX(), circle.getY(), newDiameter)
-    newCircle1.setSpeedY(-circle.getSpeedY())
-    newCircle2.setSpeedY(-circle.getSpeedY())
+    If (circle.getSpeedY() < 0) Then
+      newCircle1.setSpeedY(circle.getSpeedY())
+      newCircle2.setSpeedY(circle.getSpeedY())
+    Else 
+      newCircle1.setSpeedY(-circle.getSpeedY())
+      newCircle2.setSpeedY(-circle.getSpeedY())
+    Endif
+    
+    If (circle.getSpeedX() < 0) Then
+      newCircle1.setSpeedX(circle.getSpeedX())
+      newCircle2.setSpeedX(-circle.getSpeedX())
+    Else 
+      newCircle1.setSpeedX(-circle.getSpeedX())
+      newCircle2.setSpeedX(circle.getSpeedX())
+    Endif
+
     circleArray.Add(newCircle1, circleArray.Length - 1)
     circleArray.Add(newCircle2, circleArray.Length - 1)
   Endif
