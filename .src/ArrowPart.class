@@ -1,0 +1,54 @@
+' Gambas class file
+
+' State
+
+' Initial posX and posY
+Private posX As Integer
+Private posY As Integer
+Private size As Integer
+Private arrowColor As Integer
+
+' Behaviour
+
+' Builder
+Public Sub _new(x As Integer, y As Integer, s As Integer)
+  
+  posX = x
+  posY = y
+  size = s
+  arrowColor = Color.RGB(255, 0, 0)
+  
+End
+
+' Paint arrow parts
+Public Sub paintPart(board As DrawingArea)
+  
+  Paint.Begin(board)
+  Paint.Brush = Paint.Color(arrowColor)
+  Paint.Rectangle(posX, posY, size, size)
+  Paint.Fill()
+  Paint.End
+  
+End
+
+' Getters
+' Get pos x
+Public Function getX() As Integer
+  
+  Return posX
+  
+End
+
+' Get pos y
+Public Function getY() As Integer
+  
+  Return posY
+  
+End
+' Get size
+Public Function getSize() As Integer
+  
+  Return size
+  
+End
+
