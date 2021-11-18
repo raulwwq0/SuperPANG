@@ -3,8 +3,11 @@
 ' State
 
 ' Position X and Y
-Private posX As Integer
-Private posY As Integer
+Private posX As Float
+Private posY As Float
+
+' Speed in X
+Private speedX As Integer
 
 ' Color (It will be changed for a texture later)
 Private playerColor As Integer
@@ -17,23 +20,24 @@ Private hitboxHeight As Integer
 ' Behaviour
 
 ' Builder
-Public Sub _new(x As Integer, y As Integer, w As Integer, h As Integer)
+Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   
   posX = x
   posY = y
   hitboxWidth = w
   hitboxHeight = h
   playerColor = Color.RGB(0, 255, 0)
+  speedX = 10.0
   
 End
 
 ' Move
-Public Sub Move(dir As String, board As DrawingArea)
-  
-  If dir = "A" Or dir = "a" Then 
-    posX = posX - hitboxWidth
-  Else If dir = "D" Or dir = "d" Then 
-    posX = posX + hitboxWidth
+Public Sub Move(board As DrawingArea, key As String)
+
+  If key = "A" Then 
+    posX -= speedX
+  Else If key = "D" Then 
+    posX += speedX
   Endif
   
   If (posX < 0) Then
@@ -41,8 +45,16 @@ Public Sub Move(dir As String, board As DrawingArea)
   Else If (posX + hitboxWidth > board.Width)
     posX = board.Width - hitboxWidth
   Endif
+
+End
+
+' Move right
+Public Sub moveRight(state As Boolean)
+  
+  
   
 End
+
 
 ' Paint a player
 Public Sub paintPlayer(board As DrawingArea)

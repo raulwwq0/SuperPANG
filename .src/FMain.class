@@ -8,6 +8,8 @@ Private arrowArray As New Arrow[]
 Private circleArray As New Circle[]
 Private circleSummonTime As Integer
 
+Private currentKey As String
+
 ' Behaviour
 
 ' Things that will happen when the start button is clicked
@@ -87,29 +89,33 @@ End
 
 ' Controller for keys pressed
 Public Sub Board_KeyPress()
-  ' Create a variable for the key that is being pressed
-  Dim myKey As String
-
  ' Assing the key value (uppercase) to the previous variable
-  myKey = UCase$(Key.Text)
+  currentKey = UCase$(Key.Text)
   
   ' If the key is "A" or "D" move the player
-  If (myKey = "A" Or myKey = "D") Then
-    player.Move(myKey, Board)
+  If (currentKey = "A" Or currentKey = "D") Then
+    player.Move(Board, currentKey)
+  Endif
+
     
   ' If the key is "W" create an arrow and add it to the arrow array
-  Else If (myKey = "W") Then 
+  If (currentKey = "W") Then 
     arrow = New Arrow(player.getX() + 5, player.getY() - 10, 10)
     player.shootArrow(arrow, arrowArray)
   Endif
-  
-
 End
+
+Public Sub Board_KeyRelease()
+  
+  currentKey = ""
+  
+End
+
 
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
-  
+  player.Move(Board, currentKey)
   ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
     If (player.isDead(circleArray[i]) = True) Then
