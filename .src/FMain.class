@@ -115,6 +115,10 @@ End
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
+  Dim currentArrowDestroyed As Boolean
+  
+  currentArrowDestroyed = False
+  
   player.Move(Board, currentKey)
   ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
@@ -154,12 +158,19 @@ Public Sub Clock_Timer()
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
             
-            ' Reduce both counters to avoid out of bounds errors
-            i -= 1
-            j -= 1
+            currentArrowDestroyed = True
+            
+            ' Leave the current iteration with break
+            Break
           Endif
           j += 1
         Wend 
+        
+        If (currentArrowDestroyed = True) Then
+          currentArrowDestroyed = False
+          Break
+        Endif
+        
         i += 1
       Endif
     Wend    
