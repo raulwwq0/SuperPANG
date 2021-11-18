@@ -100,7 +100,7 @@ Public Sub Board_KeyPress()
     
   ' If the key is "W" create an arrow and add it to the arrow array
   If (currentKey = "W") Then 
-    arrow = New Arrow(player.getX() + 5, player.getY() - 10, 10)
+    arrow = New Arrow(player.getX() + 5, player.getY() - 10, 20, player)
     player.shootArrow(arrow, arrowArray)
   Endif
 End
@@ -117,6 +117,7 @@ Public Sub Clock_Timer()
   Dim j As Integer
   Dim currentArrowDestroyed As Boolean
   
+  ' This variable will be useful to break a loop when the current arrow is destroyed (to avoid out of bounds errors)
   currentArrowDestroyed = False
   
   player.Move(Board, currentKey)
@@ -158,6 +159,7 @@ Public Sub Clock_Timer()
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
             
+            ' Set this var to true because the current arrow was removed from the array
             currentArrowDestroyed = True
             
             ' Leave the current iteration with break
@@ -166,6 +168,7 @@ Public Sub Clock_Timer()
           j += 1
         Wend 
         
+        ' If the current arrow does't exist anymore leave this loop
         If (currentArrowDestroyed = True) Then
           currentArrowDestroyed = False
           Break

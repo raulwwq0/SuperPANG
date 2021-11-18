@@ -5,45 +5,70 @@
 ' Initial posX and posY
 Private posX As Integer
 Private posY As Integer
-Private radius As Integer
+Private size As Integer
 Private arrowColor As Integer
+
+Private arrowPartArray As New ArrowPart[]
 
 ' Behaviour
 
 ' Builder
-Public Sub _new(x As Integer, y As Integer, r As Integer)
+Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   
   posX = x
   posY = y
-  radius = r
+  size = s
   arrowColor = Color.RGB(255, 0, 0)
   
+  createArrow(p)
+  
 End
+
+' Create the first arrow part
+Private Sub createArrow(player As Player)
+  
+  Dim firstPart As ArrowPart
+  
+  firstPart = New ArrowPart(player.getX() + (player.getWidth() / 2) - (size / 2), player.getY() + (player.getHeight() - size), size)
+  
+  arrowPartArray.Add(firstPart, 0)
+  
+End
+
 
 ' Move the arrow to the top of the board
 Public Sub Move()
   
-  posY = posY - radius * 2
+  Dim tip As ArrowPart
+  Dim newTip As ArrowPart
+  
+  tip = arrowPartArray[0]
+
+  newTip = New ArrowPart(tip.getX(), tip.getY() - tip.getSize(), tip.getSize())
+
+  arrowPartArray.Add(newTip, 0)
   
 End
 
 ' Paint arrow (the arrow hitbox will be a circle, at least for now...)
 Public Sub paintArrow(board As DrawingArea)
-  
-  Paint.Begin(board)
-  Paint.Brush = Paint.Color(arrowColor)
-  Paint.Ellipse(posX, posY, radius * 2, radius * 2)
-  Paint.Fill()
-  Paint.End
+  Dim i As Integer
+  For i = 0 To arrowPartArray.Count - 1
+    ' Individual job to do for each arrow part
+    arrowPartArray[i].paintPart(board)
+  Next
   
 End
 
-' Check if an arrow hit the top border of the board
+' Check if an arrow tip hit the top border of the board
 Public Function hitBorder() As Boolean
   
+  Dim tip As ArrowPart
   Dim result As Boolean
   
-  If (posY <= 0) Then 
+  tip = arrowPartArray[0]
+  
+  If (tip.getY() <= 0) Then 
     result = True
   Else 
     result = False
@@ -53,21 +78,22 @@ Public Function hitBorder() As Boolean
   
 End
 
-' Check if the arrow hit a circle
+' Check if the arrow part hit a circle
 Public Function hitCircles(circle As Circle) As Boolean
   
-  Dim result As Boolean
+  Dim i As Integer
   
-  If ((posX < circle.getX() + circle.getDiameter() And 
-      posX + radius * 2 > circle.getX()) And
-      (posY < circle.getY() + circle.getDiameter() And
-      posY + radius * 2 > circle.getY())) Then
-    result = True
-  Else 
-    result = False
-  Endif
+  For i = 0 To arrowPartArray.Length - 1
+    If ((arrowPartArray[i].getX() < circle.getX() + circle.getDiameter() And 
+      arrowPartArray[i].getX() + arrowPartArray[i].getSize() > circle.getX()) And
+      (arrowPartArray[i].getY() < circle.getY() + circle.getDiameter() And
+      arrowPartArray[i].getY() + arrowPartArray[i].getSize() > circle.getY())) Then
+      Return True
+    Endif
+  Next
   
-  Return result
+  
+  Return False
   
 End
 
