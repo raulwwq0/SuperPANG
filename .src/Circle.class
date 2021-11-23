@@ -18,6 +18,8 @@ Private gravity As Float
 Private speedX As Float
 Private speedY As Float
 
+Private circleSprite As Image
+
 ' Behaviour
 
 ' Builder
@@ -26,18 +28,20 @@ Public Sub _new(x As Integer, y As Integer, d As Integer)
  posX = x
  posY = y
  diameter = d
- circleColor = Color.RGB(0, 0, 255)
+ circleColor = Color.RGB(255, 0, 0)
  speedX = 3.0
  speedY = 3.0
  gravity = 0.5
+ 
+ circleSprite = Image.Load("./sprites/circle.png")
 End
 
 ' Paint a circle
 Public Sub paintCircle(board As DrawingArea)
   
   Paint.Begin(board)
-  Paint.Brush = Paint.Color(circleColor)
-  Paint.Ellipse(posX, posY, diameter, diameter)
+  Paint.DrawImage(circleSprite, posX, posY, diameter, diameter)
+  'Paint.Ellipse(posX, posY, diameter, diameter)
   Paint.Fill()
   Paint.End
   

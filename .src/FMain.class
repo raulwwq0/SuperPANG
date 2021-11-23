@@ -10,7 +10,16 @@ Private circleSummonTime As Integer
 
 Private currentKey As String
 
+Private backgroundImage As Image
+
 ' Behaviour
+
+Public Sub Form_Open()
+  
+  backgroundImage = Image.Load("./sprites/background.png")
+  
+End
+
 
 ' Things that will happen when the start button is clicked
 Public Sub StartButton_Click()
@@ -22,7 +31,7 @@ Public Sub StartButton_Click()
   StatusLabel.Text = ""
   
   ' Create the player
-  player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 50, 30, 50)
+  player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 100, 70, 100)
   
   ' Set the summon time to 100 to spawn a circle as soon as the game start
   circleSummonTime = 100
@@ -63,6 +72,8 @@ End
 
 Public Sub Board_Draw()
   Dim i As Integer
+  
+  Paint.DrawImage(backgroundImage, 0, 0, Board.Width, Board.Height)
 
   ' Paint the player if exists to avoid errors
   If (player <> Null) Then
@@ -242,4 +253,9 @@ End
 ' - [SOLVED] When you destroy a circle which is moving up, the new little circles can go down with an insane speed. A possible
 '   solution could be check if the original circle speed in Y is positive or negative and then change the speed in the
 '   little ones.
+'
+' - The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost 
+'   hitbox
+'
+' - The player gain speed when keep presing a move key for a while
 

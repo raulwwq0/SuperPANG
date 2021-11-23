@@ -16,6 +16,33 @@ Private playerColor As Integer
 Private hitboxWidth As Integer
 Private hitboxHeight As Integer
 
+Private currentMoveSprite As Image
+
+Private moveRightSpriteArray As New Image[]
+Private moveLeftSpriteArray As New Image[]
+
+Private moveRightSprite1 As Image
+Private moveRightSprite2 As Image
+Private moveRightSprite3 As Image
+Private moveRightSprite4 As Image
+Private moveRightSprite5 As Image
+Private moveRightSprite6 As Image
+Private moveRightSprite7 As Image
+Private moveRightSprite8 As Image
+
+Private moveLeftSprite1 As Image
+Private moveLeftSprite2 As Image
+Private moveLeftSprite3 As Image
+Private moveLeftSprite4 As Image
+Private moveLeftSprite5 As Image
+Private moveLeftSprite6 As Image
+Private moveLeftSprite7 As Image
+Private moveLeftSprite8 As Image
+
+Private shootSprite As Image
+
+Private spriteRightIndex As Byte
+Private spriteLeftIndex As Byte
 
 ' Behaviour
 
@@ -27,41 +54,94 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   hitboxWidth = w
   hitboxHeight = h
   playerColor = Color.RGB(0, 255, 0)
-  speedX = 10.0
+  speedX = 7.0
   
+  moveRightSprite1 = Image.Load("./sprites/player/move_right_1.png")
+  moveRightSprite2 = Image.Load("./sprites/player/move_right_2.png")
+  moveRightSprite3 = Image.Load("./sprites/player/move_right_3.png")
+  moveRightSprite4 = Image.Load("./sprites/player/move_right_4.png")
+  moveRightSprite5 = Image.Load("./sprites/player/move_right_5.png")
+  moveRightSprite6 = Image.Load("./sprites/player/move_right_6.png")
+  moveRightSprite7 = Image.Load("./sprites/player/move_right_7.png")
+  moveRightSprite8 = Image.Load("./sprites/player/move_right_8.png")
+  
+  moveRightSpriteArray.Add(moveRightSprite1, 0)
+  moveRightSpriteArray.Add(moveRightSprite2, 1)
+  moveRightSpriteArray.Add(moveRightSprite3, 2)
+  moveRightSpriteArray.Add(moveRightSprite4, 3)
+  moveRightSpriteArray.Add(moveRightSprite5, 4)
+  moveRightSpriteArray.Add(moveRightSprite6, 5)
+  moveRightSpriteArray.Add(moveRightSprite7, 6)
+  moveRightSpriteArray.Add(moveRightSprite8, 7)
+  
+  
+  moveLeftSprite1 = Image.Load("./sprites/player/move_left_1.png")
+  moveLeftSprite2 = Image.Load("./sprites/player/move_left_2.png")
+  moveLeftSprite3 = Image.Load("./sprites/player/move_left_3.png")
+  moveLeftSprite4 = Image.Load("./sprites/player/move_left_4.png")
+  moveLeftSprite5 = Image.Load("./sprites/player/move_left_5.png")
+  moveLeftSprite6 = Image.Load("./sprites/player/move_left_6.png")
+  moveLeftSprite7 = Image.Load("./sprites/player/move_left_7.png")
+  moveLeftSprite8 = Image.Load("./sprites/player/move_left_8.png")
+  
+  moveLeftSpriteArray.Add(moveLeftSprite1, 0)
+  moveLeftSpriteArray.Add(moveLeftSprite2, 1)
+  moveLeftSpriteArray.Add(moveLeftSprite3, 2)
+  moveLeftSpriteArray.Add(moveLeftSprite4, 3)
+  moveLeftSpriteArray.Add(moveLeftSprite5, 4)
+  moveLeftSpriteArray.Add(moveLeftSprite6, 5)
+  moveLeftSpriteArray.Add(moveLeftSprite7, 6)
+  moveLeftSpriteArray.Add(moveLeftSprite8, 7)
+  
+  
+  shootSprite = Image.Load("./sprites/player/shoot.png")
+  
+  currentMoveSprite = shootSprite
+  
+  spriteRightIndex = 0
+  spriteLeftIndex = 0
 End
 
 ' Move
 Public Sub Move(board As DrawingArea, key As String)
 
-  If key = "A" Then 
-    posX -= speedX
-  Else If key = "D" Then 
-    posX += speedX
-  Endif
+    If key = "A" Then 
+      currentMoveSprite = moveLeftSpriteArray[spriteLeftIndex]
+      spriteLeftIndex += 1
+      posX -= speedX
+    Else If key = "D" Then 
+      currentMoveSprite = moveRightSpriteArray[spriteRightIndex]
+      spriteRightIndex += 1
+      posX += speedX
+    Else If key = ""
+      currentMoveSprite = shootSprite
+    Endif
+    
+    
+    
+    If (posX < 0) Then
+      posX = 0
+    Else If (posX + hitboxWidth > board.Width)
+      posX = board.Width - hitboxWidth
+    Endif
+    
+    If (spriteLeftIndex = 7) Then
+      spriteLeftIndex = 0
+    Endif
+    
+    If (spriteRightIndex = 7) Then
+      spriteRightIndex = 0
+    Endif
   
-  If (posX < 0) Then
-    posX = 0
-  Else If (posX + hitboxWidth > board.Width)
-    posX = board.Width - hitboxWidth
-  Endif
 
 End
-
-' Move right
-Public Sub moveRight(state As Boolean)
-  
-  
-  
-End
-
 
 ' Paint a player
 Public Sub paintPlayer(board As DrawingArea)
   
   Paint.Begin(board)
-  Paint.Brush = Paint.Color(playerColor)
-  Paint.Rectangle(posX, posY, hitboxWidth, hitboxHeight)
+  Paint.DrawImage(currentMoveSprite, posX, posY, hitboxWidth, hitboxHeight)
+  'Paint.Rectangle(posX, posY, hitboxWidth, hitboxHeight)
   Paint.Fill()
   Paint.End
   
@@ -70,7 +150,7 @@ End
 ' Shoot an arrow
 Public Sub shootArrow(arrow As Arrow, arrowArray As Arrow[])
   
-    
+  currentMoveSprite = shootSprite
     ' Limit the amount of arrows that can exist at the same time (2)
     If (arrowArray.Length >= 2) Then
       arrowArray.Pop()

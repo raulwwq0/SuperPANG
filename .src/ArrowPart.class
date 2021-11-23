@@ -8,6 +8,8 @@ Private posY As Integer
 Private size As Integer
 Private arrowColor As Integer
 
+
+
 ' Behaviour
 
 ' Builder
@@ -21,11 +23,11 @@ Public Sub _new(x As Integer, y As Integer, s As Integer)
 End
 
 ' Paint arrow parts
-Public Sub paintPart(board As DrawingArea)
+Public Sub paintPart(board As DrawingArea, img As Image)
   
   Paint.Begin(board)
-  Paint.Brush = Paint.Color(arrowColor)
-  Paint.Rectangle(posX, posY, size, size)
+  Paint.DrawImage(img, posX, posY, size, size)
+  'Paint.Rectangle(posX, posY, size, size)
   Paint.Fill()
   Paint.End
   

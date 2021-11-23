@@ -15,7 +15,7 @@
   }
   { Board DrawingArea
     MoveScaled(1,1,159,115)
-    Background = Color.Black
+    Background = Color.Transparent
   }
   { Clock #Timer
     #MoveScaled(153,1)

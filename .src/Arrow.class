@@ -10,6 +10,10 @@ Private arrowColor As Integer
 
 Private arrowPartArray As New ArrowPart[]
 
+Private arrowTipImage As Image
+Private arrowRope1 As Image
+Private arrowRope2 As Image
+
 ' Behaviour
 
 ' Builder
@@ -19,6 +23,10 @@ Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   posY = y
   size = s
   arrowColor = Color.RGB(255, 0, 0)
+  
+  arrowTipImage = Image.Load("./sprites/arrow/arrow_tip.png")
+  arrowRope1 = Image.Load("./sprites/arrow/arrow_rope_1.png")
+  arrowRope2 = Image.Load("./sprites/arrow/arrow_rope_2.png")
   
   createArrow(p)
   
@@ -32,6 +40,8 @@ Private Sub createArrow(player As Player)
   firstPart = New ArrowPart(player.getX() + (player.getWidth() / 2) - (size / 2), player.getY() + (player.getHeight() - size), size)
   
   arrowPartArray.Add(firstPart, 0)
+  
+
   
 End
 
@@ -53,9 +63,19 @@ End
 ' Paint arrow (the arrow hitbox will be a circle, at least for now...)
 Public Sub paintArrow(board As DrawingArea)
   Dim i As Integer
+  
   For i = 0 To arrowPartArray.Count - 1
     ' Individual job to do for each arrow part
-    arrowPartArray[i].paintPart(board)
+    If (i = 0) Then
+      arrowPartArray[i].paintPart(board, arrowTipImage)
+    Else 
+      If (i % 2 == 0) Then
+        arrowPartArray[i].paintPart(board, arrowRope1)
+      Else 
+        arrowPartArray[i].paintPart(board, arrowRope2)
+      Endif
+    Endif
+    
   Next
   
 End
