@@ -44,6 +44,8 @@ Private shootSprite As Image
 Private spriteRightIndex As Byte
 Private spriteLeftIndex As Byte
 
+Private spriteDelay As Byte
+
 ' Behaviour
 
 ' Builder
@@ -100,39 +102,52 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   
   spriteRightIndex = 0
   spriteLeftIndex = 0
+  spriteDelay = 0
 End
 
 ' Move
 Public Sub Move(board As DrawingArea, key As String)
 
-    If key = "A" Then 
+
+  If key = "A" Then 
+    If spriteDelay = 3 Then
       currentMoveSprite = moveLeftSpriteArray[spriteLeftIndex]
       spriteLeftIndex += 1
-      posX -= speedX
-    Else If key = "D" Then 
+    Endif
+
+    posX -= speedX
+  Else If key = "D" Then 
+    If spriteDelay = 3 Then
       currentMoveSprite = moveRightSpriteArray[spriteRightIndex]
       spriteRightIndex += 1
-      posX += speedX
-    Else If key = ""
-      currentMoveSprite = shootSprite
     Endif
-    
-    
-    
-    If (posX < 0) Then
-      posX = 0
-    Else If (posX + hitboxWidth > board.Width)
-      posX = board.Width - hitboxWidth
-    Endif
-    
-    If (spriteLeftIndex = 7) Then
-      spriteLeftIndex = 0
-    Endif
-    
-    If (spriteRightIndex = 7) Then
-      spriteRightIndex = 0
-    Endif
+
+    posX += speedX
+  Else If key = ""
+    currentMoveSprite = shootSprite
+  Endif
   
+  
+  
+  If (posX < 0) Then
+    posX = 0
+  Else If (posX + hitboxWidth > board.Width)
+    posX = board.Width - hitboxWidth
+  Endif
+  
+  If (spriteLeftIndex = 7) Then
+    spriteLeftIndex = 0
+  Endif
+  
+  If (spriteRightIndex = 7) Then
+    spriteRightIndex = 0
+  Endif
+  
+  If spriteDelay = 3 Then
+    spriteDelay = 0
+  Endif
+  
+  spriteDelay += 1
 
 End
 
