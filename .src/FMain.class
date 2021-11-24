@@ -8,14 +8,17 @@ Private arrowArray As New Arrow[]
 Private circleArray As New Circle[]
 Private circleSummonTime As Integer
 
+' This var is to keep the current key that is press ("" for no key pressed)
 Private currentKey As String
 
+' This image is the background for the Drawing Area
 Private backgroundImage As Image
 
 ' Behaviour
 
 Public Sub Form_Open()
   
+  ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
   
 End
@@ -64,6 +67,8 @@ Public Sub PauseButton_Click()
       Clock.Start()
       ' Clear the status label
       StatusLabel.Text = ""
+      ' Set the current key to "" to stop the player when continue if the player was moving before
+      currentKey = ""
       Board.SetFocus()  
   Endif
     
@@ -102,12 +107,6 @@ End
 Public Sub Board_KeyPress()
  ' Assing the key value (uppercase) to the previous variable
   currentKey = UCase$(Key.Text)
-  
-  ' If the key is "A" or "D" move the player
-  ' If (currentKey = "A" Or currentKey = "D") Then
-  '   player.Move(Board, currentKey)
-  ' Endif
-
     
   ' If the key is "W" create an arrow and add it to the arrow array
   If (currentKey = "W") Then 
@@ -118,6 +117,7 @@ End
 
 Public Sub Board_KeyRelease()
   
+  ' When you release any key -> clear the currentKey
   currentKey = ""
   
 End
@@ -126,6 +126,8 @@ End
 Public Sub Clock_Timer()
   Dim i As Integer
   Dim j As Integer
+  
+  ' This var is useful to break the loop
   Dim currentArrowDestroyed As Boolean
   
   ' This variable will be useful to break a loop when the current arrow is destroyed (to avoid out of bounds errors)
@@ -146,8 +148,10 @@ Public Sub Clock_Timer()
   
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
+    ' Create a circle and add it to the circle array
     circle = New Circle(Rand(0, Board.Width - 100), 100, 100)
     circleArray.Add(circle)
+    ' Set the summon time to 0
     circleSummonTime = 0
   Endif
   
@@ -155,6 +159,7 @@ Public Sub Clock_Timer()
   If (arrow <> Null) Then 
     i = 0
     While (i < arrowArray.Length)
+      ' Move an arrow from the array
       arrowArray[i].Move()
       
       ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
@@ -176,6 +181,7 @@ Public Sub Clock_Timer()
             ' Leave the current iteration with break
             Break
           Endif
+          ' Add 1 to the counter
           j += 1
         Wend 
         
@@ -184,7 +190,7 @@ Public Sub Clock_Timer()
           currentArrowDestroyed = False
           Break
         Endif
-        
+        ' Add 1 to the counter
         i += 1
       Endif
     Wend    
@@ -258,4 +264,5 @@ End
 '   hitbox
 '
 ' - [SOLVED] The player gain speed when keep presing a move key for a while
+' - [SOLVED] If the player is moving and pause the game, when continue the player keep moving without pressing any key
 

@@ -6,10 +6,11 @@
 Private posX As Integer
 Private posY As Integer
 Private size As Integer
-Private arrowColor As Integer
 
+' Create an array to store all the parts from the arrow (tip, ropes...)
 Private arrowPartArray As New ArrowPart[]
 
+' Instance all the images
 Private arrowTipImage As Image
 Private arrowRope0 As Image
 Private arrowRope1 As Image
@@ -23,8 +24,8 @@ Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   posX = x
   posY = y
   size = s
-  arrowColor = Color.RGB(255, 0, 0)
   
+  ' Load all the images
   arrowTipImage = Image.Load("./sprites/arrow/arrow_tip.png")
   arrowRope0 = Image.Load("./sprites/arrow/arrow_rope_0.png")
   arrowRope1 = Image.Load("./sprites/arrow/arrow_rope_1.png")
@@ -67,13 +68,14 @@ Public Sub paintArrow(board As DrawingArea)
   Dim i As Integer
   
   For i = 0 To arrowPartArray.Count - 1
-    ' Individual job to do for each arrow part
+    ' If the index is 0 -> the arrow tip
     If (i = 0) Then
       arrowPartArray[i].paintPart(board, arrowTipImage)
     
+    ' If the index is 1 -> the joint between the tip and the rest of the rope
     Else If (i = 1)
       arrowPartArray[i].paintPart(board, arrowRope0)
-      
+    ' Else -> the rest of the rope, changing between 2 sprites
     Else 
       If (i % 2 == 0) Then
         arrowPartArray[i].paintPart(board, arrowRope1)

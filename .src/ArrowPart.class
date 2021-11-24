@@ -6,7 +6,6 @@
 Private posX As Integer
 Private posY As Integer
 Private size As Integer
-Private arrowColor As Integer
 
 
 
@@ -18,7 +17,6 @@ Public Sub _new(x As Integer, y As Integer, s As Integer)
   posX = x
   posY = y
   size = s
-  arrowColor = Color.RGB(255, 0, 0)
   
 End
 
@@ -27,7 +25,6 @@ Public Sub paintPart(board As DrawingArea, img As Image)
   
   Paint.Begin(board)
   Paint.DrawImage(img, posX, posY, size, size)
-  'Paint.Rectangle(posX, posY, size, size)
   Paint.Fill()
   Paint.End
   

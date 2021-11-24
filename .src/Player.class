@@ -9,18 +9,18 @@ Private posY As Float
 ' Speed in X
 Private speedX As Integer
 
-' Color (It will be changed for a texture later)
-Private playerColor As Integer
-
 ' Player hitbox dimensions
 Private hitboxWidth As Integer
 Private hitboxHeight As Integer
 
+' This var will help me to know whick sprite (image) is the one I need to paint
 Private currentMoveSprite As Image
 
+' This arrays will help me to store all sprites
 Private moveRightSpriteArray As New Image[]
 Private moveLeftSpriteArray As New Image[]
 
+' Instance all the sprites
 Private moveRightSprite1 As Image
 Private moveRightSprite2 As Image
 Private moveRightSprite3 As Image
@@ -41,9 +41,11 @@ Private moveLeftSprite8 As Image
 
 Private shootSprite As Image
 
+' This index are for knowing where is the sprite in the arrays
 Private spriteRightIndex As Byte
 Private spriteLeftIndex As Byte
 
+' To avoid changing the sprites so fast we will use a counter as a delay
 Private spriteDelay As Byte
 
 ' Behaviour
@@ -55,9 +57,9 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   posY = y
   hitboxWidth = w
   hitboxHeight = h
-  playerColor = Color.RGB(0, 255, 0)
   speedX = 7.0
   
+  ' Load all the sprites and storage it in the array
   moveRightSprite1 = Image.Load("./sprites/player/move_right_1.png")
   moveRightSprite2 = Image.Load("./sprites/player/move_right_2.png")
   moveRightSprite3 = Image.Load("./sprites/player/move_right_3.png")
@@ -98,8 +100,10 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   
   shootSprite = Image.Load("./sprites/player/shoot.png")
   
+  ' By default the current sprite will be the shoot sprite
   currentMoveSprite = shootSprite
   
+  ' Set index and delay to 0 by default
   spriteRightIndex = 0
   spriteLeftIndex = 0
   spriteDelay = 0
@@ -108,8 +112,11 @@ End
 ' Move
 Public Sub Move(board As DrawingArea, key As String)
 
-
+  ' If the user press "A" -> move to left
+  ' If the user press "D" -> move to right
+  ' If the user don't press anything = "" -> stop and be ready to shoot
   If key = "A" Then 
+    ' The sprite delay will be always 3
     If spriteDelay = 3 Then
       currentMoveSprite = moveLeftSpriteArray[spriteLeftIndex]
       spriteLeftIndex += 1
@@ -127,14 +134,14 @@ Public Sub Move(board As DrawingArea, key As String)
     currentMoveSprite = shootSprite
   Endif
   
-  
-  
+  ' This if is to avoid the player move beyond the board limits
   If (posX < 0) Then
     posX = 0
   Else If (posX + hitboxWidth > board.Width)
     posX = board.Width - hitboxWidth
   Endif
   
+  ' Reset the arrays index to avoid out of bounds errors
   If (spriteLeftIndex = 7) Then
     spriteLeftIndex = 0
   Endif
@@ -143,12 +150,13 @@ Public Sub Move(board As DrawingArea, key As String)
     spriteRightIndex = 0
   Endif
   
+  ' Reset the delay when it is equal to 3 or add 1 if not
   If spriteDelay = 3 Then
     spriteDelay = 0
+  Else 
+    spriteDelay += 1
   Endif
   
-  spriteDelay += 1
-
 End
 
 ' Paint a player
@@ -156,7 +164,6 @@ Public Sub paintPlayer(board As DrawingArea)
   
   Paint.Begin(board)
   Paint.DrawImage(currentMoveSprite, posX, posY, hitboxWidth, hitboxHeight)
-  'Paint.Rectangle(posX, posY, hitboxWidth, hitboxHeight)
   Paint.Fill()
   Paint.End
   
