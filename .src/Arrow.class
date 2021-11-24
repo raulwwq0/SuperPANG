@@ -11,6 +11,7 @@ Private arrowColor As Integer
 Private arrowPartArray As New ArrowPart[]
 
 Private arrowTipImage As Image
+Private arrowRope0 As Image
 Private arrowRope1 As Image
 Private arrowRope2 As Image
 
@@ -25,6 +26,7 @@ Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   arrowColor = Color.RGB(255, 0, 0)
   
   arrowTipImage = Image.Load("./sprites/arrow/arrow_tip.png")
+  arrowRope0 = Image.Load("./sprites/arrow/arrow_rope_0.png")
   arrowRope1 = Image.Load("./sprites/arrow/arrow_rope_1.png")
   arrowRope2 = Image.Load("./sprites/arrow/arrow_rope_2.png")
   
@@ -68,6 +70,10 @@ Public Sub paintArrow(board As DrawingArea)
     ' Individual job to do for each arrow part
     If (i = 0) Then
       arrowPartArray[i].paintPart(board, arrowTipImage)
+    
+    Else If (i = 1)
+      arrowPartArray[i].paintPart(board, arrowRope0)
+      
     Else 
       If (i % 2 == 0) Then
         arrowPartArray[i].paintPart(board, arrowRope1)
