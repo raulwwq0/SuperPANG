@@ -104,9 +104,9 @@ Public Sub Board_KeyPress()
   currentKey = UCase$(Key.Text)
   
   ' If the key is "A" or "D" move the player
-  If (currentKey = "A" Or currentKey = "D") Then
-    player.Move(Board, currentKey)
-  Endif
+  ' If (currentKey = "A" Or currentKey = "D") Then
+  '   player.Move(Board, currentKey)
+  ' Endif
 
     
   ' If the key is "W" create an arrow and add it to the arrow array
@@ -257,5 +257,5 @@ End
 ' - The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost 
 '   hitbox
 '
-' - The player gain speed when keep presing a move key for a while
+' - [SOLVED] The player gain speed when keep presing a move key for a while
 
