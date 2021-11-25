@@ -186,10 +186,10 @@ Public Function isDead(circle As Circle) As Boolean
   
   Dim result As Boolean
   
-  If ((posX < circle.getX() + circle.getDiameter() And 
-      posX + hitboxWidth > circle.getX()) And
-      (posY < circle.getY() + circle.getDiameter() And
-      posY + hitboxHeight > circle.getY())) Then
+  If ((posX <= circle.getX() + circle.getDiameter() And 
+      posX + hitboxWidth >= circle.getX()) And
+      (posY <= circle.getY() + circle.getDiameter() And
+      posY + hitboxHeight >= circle.getY())) Then
     result = True
   Else 
     result = False

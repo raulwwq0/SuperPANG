@@ -109,7 +109,7 @@ Public Sub Board_KeyPress()
   currentKey = UCase$(Key.Text)
     
   ' If the key is "W" create an arrow and add it to the arrow array
-  If (currentKey = "W") Then 
+  If (currentKey = "W" And arrowArray.Length < 2) Then 
     arrow = New Arrow(player.getX() + 5, player.getY() - 10, 20, player)
     player.shootArrow(arrow, arrowArray)
   Endif
@@ -149,7 +149,7 @@ Public Sub Clock_Timer()
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
     ' Create a circle and add it to the circle array
-    circle = New Circle(Rand(0, Board.Width - 100), 100, 100)
+    circle = New Circle(Rand(0, Board.Width - 100 - (100 / 3)), 100, 100)
     circleArray.Add(circle)
     ' Set the summon time to 0
     circleSummonTime = 0
@@ -260,7 +260,7 @@ End
 '   solution could be check if the original circle speed in Y is positive or negative and then change the speed in the
 '   little ones.
 '
-' - The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost 
+' - [SOLVED] The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost 
 '   hitbox
 '
 ' - [SOLVED] The player gain speed when keep presing a move key for a while

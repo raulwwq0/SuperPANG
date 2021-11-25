@@ -38,7 +38,7 @@ End
 Public Sub paintCircle(board As DrawingArea)
   
   Paint.Begin(board)
-  Paint.DrawImage(circleSprite, posX, posY, diameter, diameter)
+  Paint.DrawImage(circleSprite, posX - (diameter / 6), posY, diameter + (diameter / 3), diameter + (diameter / 3)) ' Add (diameter / 4) to both diameters to paint the image bigger than the hitbox to avoid ghost hitbox
   Paint.Fill()
   Paint.End
   
@@ -52,13 +52,13 @@ Public Sub Move(board As DrawingArea)
   speedY += gravity
 
   ' Check if the circle hit a lateral wall
-  If (posX + diameter > board.Width Or posX < 0) Then
+  If (posX + diameter + (diameter / 6) > board.Width Or posX - (diameter / 6) < 0) Then
     speedX *= -1
   Endif
   
   
   ' Check if the circle hit the floor
-  If (posY + diameter > board.Height) Then
+  If (posY + diameter + (diameter / 3) > board.Height) Then
     speedY -= gravity
     speedY *= -1
     
