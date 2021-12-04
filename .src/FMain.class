@@ -14,12 +14,16 @@ Private currentKey As String
 ' This image is the background for the Drawing Area
 Private backgroundImage As Image
 
+Private logoImage As Image
+
 ' This var will keep the max speed in Y of all circles
 Private maxCircleSpeedY As Float
 
 ' Events +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Public Sub Form_Open()
+  
+  logoImage = Image.Load("./sprites/logo.png")
   
   ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
@@ -29,6 +33,8 @@ End
 
 ' Things that will happen when the start button is clicked
 Public Sub StartButton_Click()
+  logoImage = Null
+
   ' Clear both arrays (so important when restarting a game after losing)
   circleArray.Clear()
   arrowArray.Clear()
@@ -81,11 +87,11 @@ End
 Public Sub Board_Draw()
   Dim i As Integer
   
+  
   Paint.DrawImage(backgroundImage, 0, 0, Board.Width, Board.Height)
-
-  ' Paint the player if exists to avoid errors
-  If (player <> Null) Then
-    player.paintPlayer(Board)
+  
+  If (logoImage <> Null) Then
+    Paint.DrawImage(logoImage, (Board.Width / 2) - (556 / 2), (Board.Height / 2) - (330 / 2))
   Endif
   
   ' Paint arrows when there is at least 1 arrow
@@ -94,6 +100,11 @@ Public Sub Board_Draw()
     For i = 0 To arrowArray.Length - 1
       arrowArray[i].paintArrow(Board)
     Next
+  Endif
+  
+  ' Paint the player if exists to avoid errors
+  If (player <> Null) Then
+    player.paintPlayer(Board)
   Endif
   
   ' Paint circles if exist at least 1
@@ -268,7 +279,6 @@ Private Sub setMaxCircleSpeedY()
       maxCircleSpeedY = circleArray[i].getSpeedY()
     Endif
   Next
-  Print maxCircleSpeedY
 End
 
 ' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
