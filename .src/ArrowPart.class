@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' State
+' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Initial posX and posY
 Private posX As Integer
@@ -9,7 +9,7 @@ Private size As Integer
 
 
 
-' Behaviour
+' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Integer, y As Integer, s As Integer)
@@ -44,6 +44,7 @@ Public Function getY() As Integer
   Return posY
   
 End
+
 ' Get size
 Public Function getSize() As Integer
   

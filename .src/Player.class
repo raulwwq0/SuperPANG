@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' State
+' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Position X and Y
 Private posX As Float
@@ -48,7 +48,7 @@ Private spriteLeftIndex As Byte
 ' To avoid changing the sprites so fast we will use a counter as a delay
 Private spriteDelay As Byte
 
-' Behaviour
+' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)

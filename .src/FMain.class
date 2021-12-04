@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' State
+' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Private player As Player
 Private arrow As Arrow
 Private circle As Circle
@@ -14,7 +14,10 @@ Private currentKey As String
 ' This image is the background for the Drawing Area
 Private backgroundImage As Image
 
-' Behaviour
+' This var will keep the max speed in Y of all circles
+Private maxCircleSpeedY As Float
+
+' Events +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Public Sub Form_Open()
   
@@ -155,6 +158,8 @@ Public Sub Clock_Timer()
     circleSummonTime = 0
   Endif
   
+  setMaxCircleSpeedY()
+  
   ' If an arrow exist, "shoot it" (move it to the top of the board) 
   If (arrow <> Null) Then 
     i = 0
@@ -204,12 +209,15 @@ Public Sub Clock_Timer()
 
 End
 
+' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 ' Create 2 small circles in the position where the original circle was
 Private Sub divideCircle(circle As Circle, index As Integer)
 
   Dim newCircle1 As Circle
   Dim newCircle2 As Circle
   Dim newDiameter As Integer
+  
   newDiameter = circle.getDiameter() / 2
   
   ' Remove the circle from the array. This won't affect to the following steps because we also have the circle as a parameter
@@ -243,6 +251,25 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   Endif
 End
 
+' Return the max speed in Y of all circles
+Public Function getMaxCircleSpeedY() As Float
+  
+  Return maxCircleSpeedY
+  
+End
+
+' Set the max speed in Y of all circles
+Private Sub setMaxCircleSpeedY()
+  
+  Dim i As Integer
+  
+  For i = 0 To circleArray.Length - 1
+    If (circleArray[i].getSpeedY() > maxCircleSpeedY) Then
+      maxCircleSpeedY = circleArray[i].getSpeedY()
+    Endif
+  Next
+  Print maxCircleSpeedY
+End
 
 ' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
 '

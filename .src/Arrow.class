@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' State
+' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Initial posX and posY
 Private posX As Integer
@@ -16,7 +16,7 @@ Private arrowRope0 As Image
 Private arrowRope1 As Image
 Private arrowRope2 As Image
 
-' Behaviour
+' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)

@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' State
+' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' PosX: Horizontal position
 Private posX As Float
@@ -18,7 +18,7 @@ Private speedY As Float
 ' Set the image
 Private circleSprite As Image
 
-' Behaviour
+' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Integer, y As Integer, d As Integer)
@@ -38,7 +38,7 @@ End
 Public Sub paintCircle(board As DrawingArea)
   
   Paint.Begin(board)
-  Paint.DrawImage(circleSprite, posX - (diameter / 6), posY, diameter + (diameter / 3), diameter + (diameter / 3)) ' Add (diameter / 4) to both diameters to paint the image bigger than the hitbox to avoid ghost hitbox
+  Paint.DrawImage(circleSprite, posX - (diameter / 6), posY, diameter + (diameter / 3), diameter + (diameter / 3))
   Paint.Fill()
   Paint.End
   
@@ -60,7 +60,15 @@ Public Sub Move(board As DrawingArea)
   ' Check if the circle hit the floor
   If (posY + diameter + (diameter / 3) > board.Height) Then
     speedY -= gravity
-    speedY *= -1
+    
+    ' To make the circle bounce less depending on the diameter size I will substract a const to the max speed of a big circle
+    If (diameter = 25) Then         ' <- A small circle
+      speedY = -(FMain.getMaxCircleSpeedY() - 10)
+    Else If (diameter = 50) Then    ' <- A medium circle
+      speedY = -(FMain.getMaxCircleSpeedY() - 5)
+    Else                            ' <- A big circle
+      speedY *= -1
+    Endif
     
   Endif
   
