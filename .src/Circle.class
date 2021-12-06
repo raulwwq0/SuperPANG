@@ -18,6 +18,9 @@ Private speedY As Float
 ' Set the image
 Private circleSprite As Image
 
+Private bounceSoundChannel As Channel
+Private circleBounceSound As Sound
+
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
@@ -32,6 +35,8 @@ Public Sub _new(x As Integer, y As Integer, d As Integer)
  
  ' Load the sprite
  circleSprite = Image.Load("./sprites/circle.png")
+ 
+ circleBounceSound = Sound.Load("./sounds/circle_bounce.mp3")
 End
 
 ' Paint a circle
@@ -53,12 +58,14 @@ Public Sub Move(board As DrawingArea)
 
   ' Check if the circle hit a lateral wall
   If (posX + diameter + (diameter / 6) > board.Width Or posX - (diameter / 6) < 0) Then
+    FMain.createSounds(circleBounceSound)
     speedX *= -1
   Endif
   
   
   ' Check if the circle hit the floor
   If (posY + diameter + (diameter / 3) > board.Height) Then
+    FMain.createSounds(circleBounceSound)
     speedY -= gravity
     
     ' To make the circle bounce less depending on the diameter size I will substract a const to the max speed of a big circle
@@ -73,7 +80,6 @@ Public Sub Move(board As DrawingArea)
   Endif
   
 End
-
 
 ' Getters
 ' Get X

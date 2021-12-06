@@ -19,6 +19,9 @@ Private logoImage As Image
 ' This var will keep the max speed in Y of all circles
 Private maxCircleSpeedY As Float
 
+Private currentChannelAvailable As Integer
+
+
 ' Events +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Public Sub Form_Open()
@@ -28,6 +31,12 @@ Public Sub Form_Open()
   ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
   
+  
+  Music.Load("./sounds/opening_song.mp3")
+  Music.Play(-1) ' -1 as a parameter of Play indicates an infinite loop where the music will be playing forever until we stop it
+  Music.Volume = 100
+  
+  currentChannelAvailable = 0
 End
 
 
@@ -57,6 +66,13 @@ Public Sub StartButton_Click()
   ' Enable the pause button when the game starts
   PauseButton.Enabled = True
   
+  Music.Stop()
+  If (Music.State = Music.Stopped) Then
+    Music.Load("./sounds/ingame_song.mp3")
+    Music.Play(-1)
+  Endif
+  Music.Volume = 10
+  
   ' Set the focus on the board
   Board.SetFocus()
   
@@ -70,10 +86,12 @@ Public Sub PauseButton_Click()
       PauseButton.Text = "Continue"
       StatusLabel.Text = "PAUSE"
       Clock.Stop()
+      Music.Pause()
   Else
       'Continue when pausing
       PauseButton.Text = "Pause"
       Clock.Start()
+      Music.Play(-1)
       ' Clear the status label
       StatusLabel.Text = ""
       ' Set the current key to "" to stop the player when continue if the player was moving before
@@ -148,13 +166,22 @@ Public Sub Clock_Timer()
   currentArrowDestroyed = False
   
   player.Move(Board, currentKey)
+  
+  If (currentChannelAvailable > 7) Then
+    currentChannelAvailable = 0
+  Endif
+  
   ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
     If (player.isDead(circleArray[i]) = True) Then
       Clock.Stop()
+      Music.Stop()
+      Music.Load("./sounds/ending_song.mp3")
+      Music.Play(-1, 10.5)
+      Music.Volume = 70
+      logoImage = Image.Load("./sprites/game_over_image.png")
       StartButton.Enabled = True
       PauseButton.Enabled = False
-      StatusLabel.Text = "GAME OVER"
     Else 
       circleArray[i].Move(Board)
     Endif
@@ -162,9 +189,14 @@ Public Sub Clock_Timer()
   
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
-    ' Create a circle and add it to the circle array
-    circle = New Circle(Rand(0, Board.Width - 100 - (100 / 3)), 100, 100)
-    circleArray.Add(circle)
+    
+    ' Limit the amount of circle in the array to avoid crashs due to exceed the sound channels limits
+    If (circleArray.Length < 5) Then
+      ' Create a circle and add it to the circle array
+      circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
+      circleArray.Add(circle)
+    Endif
+
     ' Set the summon time to 0
     circleSummonTime = 0
   Endif
@@ -261,6 +293,18 @@ Private Sub divideCircle(circle As Circle, index As Integer)
     circleArray.Add(newCircle2, circleArray.Length - 1)
   Endif
 End
+
+Public Sub createSounds(sound As Sound)
+
+  
+  If (Channels[currentChannelAvailable] <> Null) Then
+    Channels[currentChannelAvailable].Play(sound)
+  Endif
+  
+  currentChannelAvailable += 1
+  
+End
+
 
 ' Return the max speed in Y of all circles
 Public Function getMaxCircleSpeedY() As Float

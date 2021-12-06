@@ -16,6 +16,10 @@ Private arrowRope0 As Image
 Private arrowRope1 As Image
 Private arrowRope2 As Image
 
+Private circlePopSound As Sound
+Private arrowShootSound As Sound
+
+
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
@@ -31,6 +35,9 @@ Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   arrowRope1 = Image.Load("./sprites/arrow/arrow_rope_1.png")
   arrowRope2 = Image.Load("./sprites/arrow/arrow_rope_2.png")
   
+  circlePopSound = Sound.Load("./sounds/circle_pop.mp3")
+  arrowShootSound = Sound.Load("./sounds/arrow_shoot.mp3")
+    
   createArrow(p)
   
 End
@@ -41,11 +48,8 @@ Private Sub createArrow(player As Player)
   Dim firstPart As ArrowPart
   
   firstPart = New ArrowPart(player.getX() + (player.getWidth() / 2) - (size / 2), player.getY() + (player.getHeight() - size), size)
-  
+  FMain.createSounds(arrowShootSound)
   arrowPartArray.Add(firstPart, 0)
-  
-
-  
 End
 
 
@@ -116,6 +120,7 @@ Public Function hitCircles(circle As Circle) As Boolean
       arrowPartArray[i].getX() + arrowPartArray[i].getSize() > circle.getX()) And
       (arrowPartArray[i].getY() < circle.getY() + circle.getDiameter() And
       arrowPartArray[i].getY() + arrowPartArray[i].getSize() > circle.getY())) Then
+      FMain.createSounds(circlePopSound)
       Return True
     Endif
   Next

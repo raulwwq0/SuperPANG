@@ -48,6 +48,10 @@ Private spriteLeftIndex As Byte
 ' To avoid changing the sprites so fast we will use a counter as a delay
 Private spriteDelay As Byte
 
+Private gameOverSound As Sound
+' Private playerStepSound As Sound
+' Private soundDelay As Byte
+
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
@@ -107,6 +111,12 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   spriteRightIndex = 0
   spriteLeftIndex = 0
   spriteDelay = 0
+  ' soundDelay = 0
+  ' 
+  ' playerStepSound = Sound.Load("./sounds/player_step.mp3")
+  
+  gameOverSound = Sound.Load("./sounds/game_over_sound.mp3")
+
 End
 
 ' Move
@@ -117,21 +127,34 @@ Public Sub Move(board As DrawingArea, key As String)
   ' If the user don't press anything = "" -> stop and be ready to shoot
   If key = "A" Then 
     ' The sprite delay will be always 3
-    If spriteDelay = 3 Then
+    If spriteDelay = 4 Then
       currentMoveSprite = moveLeftSpriteArray[spriteLeftIndex]
+      
+      ' If (soundDelay = 3) Then
+      '   FMain.createSounds(playerStepSound)
+      ' Endif
+      
       spriteLeftIndex += 1
     Endif
 
     posX -= speedX
   Else If key = "D" Then 
-    If spriteDelay = 3 Then
+    If spriteDelay = 4 Then
       currentMoveSprite = moveRightSpriteArray[spriteRightIndex]
+      
+      ' If (soundDelay = 3) Then
+      '   FMain.createSounds(playerStepSound)
+      ' Endif
+      
       spriteRightIndex += 1
     Endif
 
     posX += speedX
   Else If key = ""
     currentMoveSprite = shootSprite
+        
+    spriteDelay = 0
+    'soundDelay = 3
   Endif
   
   ' This if is to avoid the player move beyond the board limits
@@ -151,11 +174,17 @@ Public Sub Move(board As DrawingArea, key As String)
   Endif
   
   ' Reset the delay when it is equal to 3 or add 1 if not
-  If spriteDelay = 3 Then
+  If spriteDelay > 4 Then
     spriteDelay = 0
   Else 
     spriteDelay += 1
   Endif
+  
+  ' If soundDelay > 3 Then
+  '   soundDelay = 0
+  ' Else 
+  '   soundDelay += 1
+  ' Endif
   
 End
 
@@ -177,25 +206,24 @@ Public Sub shootArrow(arrow As Arrow, arrowArray As Arrow[])
     If (arrowArray.Length >= 2) Then
       arrowArray.Pop()
     Endif
-    arrowArray.Add(arrow, 0)
+  arrowArray.Add(arrow, 0)
   
 End
 
 ' Check if the player is dead (when a circle touch it)
 Public Function isDead(circle As Circle) As Boolean
   
-  Dim result As Boolean
-  
   If ((posX <= circle.getX() + circle.getDiameter() And 
       posX + hitboxWidth >= circle.getX()) And
       (posY <= circle.getY() + circle.getDiameter() And
       posY + hitboxHeight >= circle.getY())) Then
-    result = True
+      
+    FMain.createSounds(gameOverSound)
+    Return True
+    
   Else 
-    result = False
+    Return False
   Endif
-  
-  Return result
   
 End
 
