@@ -199,13 +199,19 @@ Public Sub paintPlayer(board As DrawingArea)
 End
 
 ' Shoot an arrow
-Public Sub shootArrow(arrow As Arrow, arrowArray As Arrow[])
+Public Sub shootArrow(arrowArray As Arrow[])
+  
+  Dim arrow As Arrow
+  
+  arrow = New Arrow(posX + (hitboxWidth / 2), posY + hitboxHeight, 20)
   
   currentMoveSprite = shootSprite
-    ' Limit the amount of arrows that can exist at the same time (2)
-    If (arrowArray.Length >= 2) Then
-      arrowArray.Pop()
-    Endif
+  
+  ' Limit the amount of arrows that can exist at the same time (2)
+  If (arrowArray.Length >= 2) Then
+    arrowArray.Pop()
+  Endif
+  
   arrowArray.Add(arrow, 0)
   
 End

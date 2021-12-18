@@ -2,7 +2,7 @@
 Title=SuperPang
 Startup=FMain
 Profiling=1
-Version=0.0.1
+Version=0.3.0
 Component=gb.image
 Component=gb.gui
 Component=gb.form

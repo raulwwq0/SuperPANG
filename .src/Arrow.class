@@ -23,7 +23,7 @@ Private arrowShootSound As Sound
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
-Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
+Public Sub _new(x As Integer, y As Integer, s As Integer)
   
   posX = x
   posY = y
@@ -38,17 +38,18 @@ Public Sub _new(x As Integer, y As Integer, s As Integer, p As Player)
   circlePopSound = Sound.Load("./sounds/circle_pop.mp3")
   arrowShootSound = Sound.Load("./sounds/arrow_shoot.mp3")
     
-  createArrow(p)
+  createArrow()
   
 End
 
 ' Create the first arrow part
-Private Sub createArrow(player As Player)
+Private Sub createArrow()
   
   Dim firstPart As ArrowPart
+  firstPart = New ArrowPart(posX - (size / 2), posY, size)
   
-  firstPart = New ArrowPart(player.getX() + (player.getWidth() / 2) - (size / 2), player.getY() + (player.getHeight() - size), size)
   FMain.createSounds(arrowShootSound)
+  
   arrowPartArray.Add(firstPart, 0)
 End
 
@@ -60,7 +61,6 @@ Public Sub Move()
   Dim newTip As ArrowPart
   
   tip = arrowPartArray[0]
-
   newTip = New ArrowPart(tip.getX(), tip.getY() - tip.getSize(), tip.getSize())
 
   arrowPartArray.Add(newTip, 0)
@@ -90,6 +90,7 @@ Public Sub paintArrow(board As DrawingArea)
     
   Next
   
+  Print arrowPartArray.Length
 End
 
 ' Check if an arrow tip hit the top border of the board

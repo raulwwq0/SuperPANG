@@ -2,7 +2,6 @@
 
 ' State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Private player As Player
-Private arrow As Arrow
 Private circle As Circle
 Private arrowArray As New Arrow[]
 Private circleArray As New Circle[]
@@ -31,6 +30,7 @@ Public Sub Form_Open()
   ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
   
+  ' Set the max possible amount of channels to use all of them
   Channels.Count = 32
   
   Music.Load("./sounds/opening_song.mp3")
@@ -106,20 +106,13 @@ End
 Public Sub Board_Draw()
   Dim i As Integer
   
-  
   Paint.DrawImage(backgroundImage, 0, 0, Board.Width, Board.Height)
   
-  If (logoImage <> Null) Then
-    Paint.DrawImage(logoImage, (Board.Width / 2) - (556 / 2), (Board.Height / 2) - (330 / 2))
-  Endif
-  
-  ' Paint arrows when there is at least 1 arrow
-  If (arrow <> Null) Then 
-    ' Use for to paint all arrows from the array
-    For i = 0 To arrowArray.Length - 1
-      arrowArray[i].paintArrow(Board)
-    Next
-  Endif
+  ' Use for to paint all arrows from the array
+  For i = 0 To arrowArray.Length - 1
+    arrowArray[i].paintArrow(Board)
+    Print arrowArray.Length
+  Next
   
   ' Paint the player if exists to avoid errors
   If (player <> Null) Then
@@ -134,6 +127,10 @@ Public Sub Board_Draw()
     Next
   Endif
   
+  If (logoImage <> Null) Then
+    Paint.DrawImage(logoImage, (Board.Width / 2) - (556 / 2), (Board.Height / 2) - (330 / 2))
+  Endif
+  
 End
 
 ' Controller for keys pressed
@@ -143,8 +140,7 @@ Public Sub Board_KeyPress()
     
   ' If the key is "W" create an arrow and add it to the arrow array
   If (currentKey = "W" And arrowArray.Length < 2) Then 
-    arrow = New Arrow(player.getX() + 5, player.getY() - 10, 20, player)
-    player.shootArrow(arrow, arrowArray)
+    player.shootArrow(arrowArray)
   Endif
 End
 
@@ -157,99 +153,49 @@ End
 
 
 Public Sub Clock_Timer()
-  Dim i As Integer
-  Dim j As Integer
-  
-  ' This var is useful to break the loop
-  Dim currentArrowDestroyed As Boolean
-  
-  ' This variable will be useful to break a loop when the current arrow is destroyed (to avoid out of bounds errors)
-  currentArrowDestroyed = False
   
   player.Move(Board, currentKey)
-
   
-  ' Check if the player is dead or not. If not move the player
-  For i = 0 To circleArray.Length - 1
-    If (player.isDead(circleArray[i]) = Null) Then
-      Clock.Stop()
-      Music.Stop()
-      Music.Load("./sounds/ending_song.mp3")
-      Music.Play(-1, 10.5)
-      Music.Volume = 70
-      logoImage = Image.Load("./sprites/game_over_image.png")
-      StartButton.Enabled = True
-      PauseButton.Enabled = False
-    Else 
-      circleArray[i].Move(Board)
-    Endif
-  Next
-  
-  ' The following lines create a lot of circles
-  If (circleSummonTime = 100) Then
-    
-    ' Limit the amount of circle in the array to avoid crashs due to exceed the sound channels limits
-    'If (circleArray.Length < 5) Then
-      ' Create a circle and add it to the circle array
-      circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
-      circleArray.Add(circle)
-    'Endif
-
-    ' Set the summon time to 0
-    circleSummonTime = 0
-  Endif
+  createCircles()
   
   setMaxCircleSpeedY()
   
-  ' If an arrow exist, "shoot it" (move it to the top of the board) 
-  If (arrow <> Null) Then 
-    i = 0
-    While (i < arrowArray.Length)
-      ' Move an arrow from the array
-      arrowArray[i].Move()
-      
-      ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
-      If (arrowArray[i].hitBorder() = True) Then 
-        arrowArray.Pop() ' <- The first arrow to hit the border will be ALWAYS the last one in the array, so we can use Pop
-      Else 
-        ' If the arrow hit a circle, the circle will dissapear (for now...) and the arrow will be destroyed
-        j = 0
-        While (j < circleArray.Length And arrowArray.Length > 0)
-          If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
-            
-            ' Divide the circle and destroy the arrow
-            divideCircle(circleArray[j], j)
-            arrowArray.Remove(i)
-            
-            ' Set this var to true because the current arrow was removed from the array
-            currentArrowDestroyed = True
-            
-            ' Leave the current iteration with break
-            Break
-          Endif
-          ' Add 1 to the counter
-          j += 1
-        Wend 
-        
-        ' If the current arrow does't exist anymore leave this loop
-        If (currentArrowDestroyed = True) Then
-          currentArrowDestroyed = False
-          Break
-        Endif
-        ' Add 1 to the counter
-        i += 1
-      Endif
-    Wend    
-  Endif
+  checkArrowCircleCollisions()
+  
+  checkIfPlayerIsDead()
   
   ' Increase the circle summon time in 1
   circleSummonTime += 1
+  
   ' Refresh the board to make the changes to take effect
   Board.Refresh()
 
 End
 
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+' Return the max speed in Y of all circles
+Public Function getMaxCircleSpeedY() As Float
+  
+  Return maxCircleSpeedY
+  
+End
+
+Public Sub createSounds(sound As Sound)
+    
+  ' Reset the current channel index if it reaches the max index
+  If (currentChannelAvailable > 31) Then 
+    currentChannelAvailable = 0
+  Endif
+  
+  If (Channels[currentChannelAvailable] <> Null) Then
+    Channels[currentChannelAvailable].Stop()
+    Channels[currentChannelAvailable].Play(sound)
+  Endif 
+  
+  currentChannelAvailable += 1
+  
+End
 
 ' Create 2 small circles in the position where the original circle was
 Private Sub divideCircle(circle As Circle, index As Integer)
@@ -291,33 +237,28 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   Endif
 End
 
-Public Sub createSounds(sound As Sound)
 
+
+Private Sub createCircles()
+  
+  ' The following lines create a lot of circles
+  If (circleSummonTime = 100) Then
     
-  If (currentChannelAvailable > 31) Then 
-    currentChannelAvailable = 0
-  Endif
-  
-  If (Channels[currentChannelAvailable] <> Null) Then
-    Channels[currentChannelAvailable].Stop()
-    Channels[currentChannelAvailable].Play(sound)
-  Endif
-  Print currentChannelAvailable
-  currentChannelAvailable += 1
-  
-End
+    ' Limit the amount of circle in the array to avoid crashs due to exceed the sound channels limits
+    'If (circleArray.Length < 5) Then
+      ' Create a circle and add it to the circle array
+      circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
+      circleArray.Add(circle)
+    'Endif
 
-
-' Return the max speed in Y of all circles
-Public Function getMaxCircleSpeedY() As Float
-  
-  Return maxCircleSpeedY
+    ' Set the summon time to 0
+    circleSummonTime = 0
+  Endif
   
 End
 
 ' Set the max speed in Y of all circles
 Private Sub setMaxCircleSpeedY()
-  
   Dim i As Integer
   
   For i = 0 To circleArray.Length - 1
@@ -326,6 +267,84 @@ Private Sub setMaxCircleSpeedY()
     Endif
   Next
 End
+
+Private Function checkArrowCircleCollisions() As Integer
+  
+  Dim i As Integer
+  Dim j As Integer
+  
+  ' This var is useful to break the loop
+  Dim currentArrowDestroyed As Boolean
+  
+  ' This variable will be useful to break a loop when the current arrow is destroyed (to avoid out of bounds errors)
+  currentArrowDestroyed = False
+  
+  ' If an arrow exist, "shoot it" (move it to the top of the board) 
+  If (arrowArray.Length <> 0) Then 
+    
+    i = 0
+    While (i < arrowArray.Length)
+      ' Move an arrow from the array
+      arrowArray[i].Move()
+      
+      ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
+      If (arrowArray[i].hitBorder() = True) Then 
+        arrowArray.Pop() ' <- The first arrow to hit the border will be ALWAYS the last one in the array, so we can use Pop
+      Else 
+        ' If the arrow hit a circle, the circle will dissapear (for now...) and the arrow will be destroyed
+        j = 0
+        While (j < circleArray.Length And arrowArray.Length > 0)
+          If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
+            
+            ' Divide the circle and destroy the arrow
+            divideCircle(circleArray[j], j)
+            arrowArray.Remove(i)
+            
+            ' Set this var to true because the current arrow was removed from the array
+            currentArrowDestroyed = True
+            
+            ' Leave the current iteration with break
+            Return
+          Endif
+          ' Add 1 to the counter
+          j += 1
+        Wend 
+        
+        ' If the current arrow does't exist anymore leave this loop
+        If (currentArrowDestroyed = True) Then
+          currentArrowDestroyed = False
+          Return
+        Endif
+        ' Add 1 to the counter
+        i += 1
+      Endif
+    Wend    
+  Endif
+  
+End
+
+Private Sub checkIfPlayerIsDead()
+  Dim i As Integer
+  
+  ' Check if the player is dead or not. If not move the circles
+  For i = 0 To circleArray.Length - 1
+    If (player.isDead(circleArray[i]) = True) Then
+      Clock.Stop()
+      Music.Stop()
+      Music.Load("./sounds/ending_song.mp3")
+      Music.Play(-1, 10.5)
+      Music.Volume = 70
+      logoImage = Image.Load("./sprites/game_over_image.png")
+      StartButton.Enabled = True
+      PauseButton.Enabled = False
+    Else 
+      circleArray[i].Move(Board)
+    Endif
+  Next
+  
+End
+
+
 
 ' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
 '
