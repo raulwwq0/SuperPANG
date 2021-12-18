@@ -18,7 +18,6 @@ Private speedY As Float
 ' Set the image
 Private circleSprite As Image
 
-Private bounceSoundChannel As Channel
 Private circleBounceSound As Sound
 
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -26,36 +25,37 @@ Private circleBounceSound As Sound
 ' Builder
 Public Sub _new(x As Integer, y As Integer, d As Integer)
 
- posX = x
- posY = y
- diameter = d
- speedX = 3.0
- speedY = 3.0
- gravity = 0.5
- 
- ' Load the sprite
- circleSprite = Image.Load("./sprites/circle.png")
- 
- circleBounceSound = Sound.Load("./sounds/circle_bounce.mp3")
+  posX = x
+  posY = y
+  diameter = d
+  speedX = 3.0
+  speedY = 3.0
+  gravity = 0.5
+
+  ' Load the sprite
+  circleSprite = Image.Load("./sprites/circle.png")
+
+  circleBounceSound = Sound.Load("./sounds/circle_bounce.mp3")
+
 End
 
 ' Paint a circle
 Public Sub paintCircle(board As DrawingArea)
-  
+
   Paint.Begin(board)
   Paint.DrawImage(circleSprite, posX - (diameter / 6), posY, diameter + (diameter / 3), diameter + (diameter / 3))
   Paint.Fill()
   Paint.End
-  
+
 End
 
 ' Move
 Public Sub Move(board As DrawingArea)
-  
+
   posX += speedX
   posY += speedY
   speedY += gravity
-  
+
   ' Check if the ball is stuck outside the board
   If (posX < 0) Then
     posX = 10
@@ -68,12 +68,12 @@ Public Sub Move(board As DrawingArea)
     FMain.createSounds(circleBounceSound)
     speedX *= -1
   Endif
-  
+
   ' Check if the circle hit the floor
   If (posY + diameter + (diameter / 3) > board.Height) Then
     FMain.createSounds(circleBounceSound)
     speedY -= gravity
-    
+
     ' To make the circle bounce less depending on the diameter size I will substract a const to the max speed of a big circle
     If (diameter = 25) Then         ' <- A small circle
       speedY = -(FMain.getMaxCircleSpeedY() - 10)
@@ -82,45 +82,45 @@ Public Sub Move(board As DrawingArea)
     Else                            ' <- A big circle
       speedY *= -1
     Endif
-    
+
   Endif
-  
+
 End
 
 ' Getters
 ' Get X
 Public Function getX() As Integer
-  
+
   Return posX
-  
+
 End
 
 ' Get Y
 Public Function getY() As Integer
-  
+
   Return posY
-  
+
 End
 
 'Get side
 Public Function getDiameter() As Integer
 
   Return diameter
-  
+
 End
 
 ' Get speed in Y
 Public Function getSpeedY() As Float
-  
+
   Return speedY
-  
+
 End
 
 ' Get speed in X
 Public Function getSpeedX() As Float
-  
+
   Return speedX
-  
+
 End
 
 ' Setters
@@ -128,12 +128,12 @@ End
 Public Sub setSpeedY(newSpeedY As Float)
 
   speedY = newSpeedY
-  
+
 End
 
 ' Set speed in X
 Public Sub setSpeedX(newSpeedX As Float)
 
   speedX = newSpeedX
-  
+
 End

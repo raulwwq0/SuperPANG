@@ -56,13 +56,13 @@ Private gameOverSound As Sound
 
 ' Builder
 Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
-  
+
   posX = x
   posY = y
   hitboxWidth = w
   hitboxHeight = h
   speedX = 7.0
-  
+
   ' Load all the sprites and storage it in the array
   moveRightSprite1 = Image.Load("./sprites/player/move_right_1.png")
   moveRightSprite2 = Image.Load("./sprites/player/move_right_2.png")
@@ -72,7 +72,7 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   moveRightSprite6 = Image.Load("./sprites/player/move_right_6.png")
   moveRightSprite7 = Image.Load("./sprites/player/move_right_7.png")
   moveRightSprite8 = Image.Load("./sprites/player/move_right_8.png")
-  
+
   moveRightSpriteArray.Add(moveRightSprite1, 0)
   moveRightSpriteArray.Add(moveRightSprite2, 1)
   moveRightSpriteArray.Add(moveRightSprite3, 2)
@@ -81,8 +81,7 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   moveRightSpriteArray.Add(moveRightSprite6, 5)
   moveRightSpriteArray.Add(moveRightSprite7, 6)
   moveRightSpriteArray.Add(moveRightSprite8, 7)
-  
-  
+
   moveLeftSprite1 = Image.Load("./sprites/player/move_left_1.png")
   moveLeftSprite2 = Image.Load("./sprites/player/move_left_2.png")
   moveLeftSprite3 = Image.Load("./sprites/player/move_left_3.png")
@@ -91,7 +90,7 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   moveLeftSprite6 = Image.Load("./sprites/player/move_left_6.png")
   moveLeftSprite7 = Image.Load("./sprites/player/move_left_7.png")
   moveLeftSprite8 = Image.Load("./sprites/player/move_left_8.png")
-  
+
   moveLeftSpriteArray.Add(moveLeftSprite1, 0)
   moveLeftSpriteArray.Add(moveLeftSprite2, 1)
   moveLeftSpriteArray.Add(moveLeftSprite3, 2)
@@ -100,21 +99,20 @@ Public Sub _new(x As Float, y As Float, w As Integer, h As Integer)
   moveLeftSpriteArray.Add(moveLeftSprite6, 5)
   moveLeftSpriteArray.Add(moveLeftSprite7, 6)
   moveLeftSpriteArray.Add(moveLeftSprite8, 7)
-  
-  
+
   shootSprite = Image.Load("./sprites/player/shoot.png")
-  
+
   ' By default the current sprite will be the shoot sprite
   currentMoveSprite = shootSprite
-  
+
   ' Set index and delay to 0 by default
   spriteRightIndex = 0
   spriteLeftIndex = 0
   spriteDelay = 0
   ' soundDelay = 0
-  ' 
+  '
   ' playerStepSound = Sound.Load("./sounds/player_step.mp3")
-  
+
   gameOverSound = Sound.Load("./sounds/game_over_sound.mp3")
 
 End
@@ -125,140 +123,139 @@ Public Sub Move(board As DrawingArea, key As String)
   ' If the user press "A" -> move to left
   ' If the user press "D" -> move to right
   ' If the user don't press anything = "" -> stop and be ready to shoot
-  If key = "A" Then 
+  If key = "A" Then
     ' The sprite delay will be always 3
     If spriteDelay = 4 Then
       currentMoveSprite = moveLeftSpriteArray[spriteLeftIndex]
-      
+
       ' If (soundDelay = 3) Then
       '   FMain.createSounds(playerStepSound)
       ' Endif
-      
+
       spriteLeftIndex += 1
     Endif
 
     posX -= speedX
-  Else If key = "D" Then 
+  Else If key = "D" Then
     If spriteDelay = 4 Then
       currentMoveSprite = moveRightSpriteArray[spriteRightIndex]
-      
+
       ' If (soundDelay = 3) Then
       '   FMain.createSounds(playerStepSound)
       ' Endif
-      
+
       spriteRightIndex += 1
     Endif
 
     posX += speedX
   Else If key = ""
     currentMoveSprite = shootSprite
-        
+
     spriteDelay = 0
     'soundDelay = 3
   Endif
-  
+
   ' This if is to avoid the player move beyond the board limits
   If (posX < 0) Then
     posX = 0
   Else If (posX + hitboxWidth > board.Width)
     posX = board.Width - hitboxWidth
   Endif
-  
+
   ' Reset the arrays index to avoid out of bounds errors
   If (spriteLeftIndex = 7) Then
     spriteLeftIndex = 0
   Endif
-  
+
   If (spriteRightIndex = 7) Then
     spriteRightIndex = 0
   Endif
-  
+
   ' Reset the delay when it is equal to 3 or add 1 if not
   If spriteDelay > 4 Then
     spriteDelay = 0
-  Else 
+  Else
     spriteDelay += 1
   Endif
-  
+
   ' If soundDelay > 3 Then
   '   soundDelay = 0
-  ' Else 
+  ' Else
   '   soundDelay += 1
   ' Endif
-  
+
 End
 
 ' Paint a player
 Public Sub paintPlayer(board As DrawingArea)
-  
+
   Paint.Begin(board)
   Paint.DrawImage(currentMoveSprite, posX, posY, hitboxWidth, hitboxHeight)
   Paint.Fill()
   Paint.End
-  
+
 End
 
 ' Shoot an arrow
 Public Sub shootArrow(arrowArray As Arrow[])
-  
+
   Dim arrow As Arrow
-  
+
   arrow = New Arrow(posX + (hitboxWidth / 2), posY + hitboxHeight, 20)
-  
+
   currentMoveSprite = shootSprite
-  
+
   ' Limit the amount of arrows that can exist at the same time (2)
   If (arrowArray.Length >= 2) Then
     arrowArray.Pop()
   Endif
-  
+
   arrowArray.Add(arrow, 0)
-  
+
 End
 
 ' Check if the player is dead (when a circle touch it)
 Public Function isDead(circle As Circle) As Boolean
-  
-  If ((posX <= circle.getX() + circle.getDiameter() And 
+
+  If ((posX <= circle.getX() + circle.getDiameter() And
       posX + hitboxWidth >= circle.getX()) And
       (posY <= circle.getY() + circle.getDiameter() And
       posY + hitboxHeight >= circle.getY())) Then
-      
+
     FMain.createSounds(gameOverSound)
     Return True
-    
-  Else 
+
+  Else
     Return False
   Endif
-  
-End
 
+End
 
 ' Getters
 ' Get X
 Public Function getX() As Integer
-  
+
   Return posX
-  
+
 End
 
 ' Get Y
 Public Function getY() As Integer
-  
+
   Return posY
-  
+
 End
 
 ' Get width
 Public Function getWidth() As Integer
-  
+
   Return hitboxWidth
-  
+
 End
 
 ' Get height
 Public Function getHeight() As Integer
-  
+
   Return hitboxHeight
-  
+
 End

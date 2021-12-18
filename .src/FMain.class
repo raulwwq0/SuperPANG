@@ -20,152 +20,153 @@ Private maxCircleSpeedY As Float
 
 Private currentChannelAvailable As Integer
 
-
 ' Events +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Public Sub Form_Open()
-  
+
   logoImage = Image.Load("./sprites/logo.png")
-  
+
   ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
-  
+
   ' Set the max possible amount of channels to use all of them
   Channels.Count = 32
-  
+
   Music.Load("./sounds/opening_song.mp3")
   Music.Play(-1) ' -1 as a parameter of Play indicates an infinite loop where the music will be playing forever until we stop it
   Music.Volume = 100
-  
-  currentChannelAvailable = 0
-End
 
+  currentChannelAvailable = 0
+
+End
 
 ' Things that will happen when the start button is clicked
 Public Sub StartButton_Click()
+
   logoImage = Null
 
   ' Clear both arrays (so important when restarting a game after losing)
   circleArray.Clear()
   arrowArray.Clear()
-  
+
   ' Clear the status label
   StatusLabel.Text = ""
-  
+
   ' Create the player
   player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 100, 70, 100)
-  
+
   ' Set the summon time to 100 to spawn a circle as soon as the game start
   circleSummonTime = 100
-  
+
   ' Start the game clock
   Clock.Start()
-  
+
   ' Disable the start button once it is clicked
   StartButton.Enabled = False
-  
+
   ' Enable the pause button when the game starts
   PauseButton.Enabled = True
-  
+
   Music.Stop()
   If (Music.State = Music.Stopped) Then
     Music.Load("./sounds/ingame_song.mp3")
     Music.Play(-1)
   Endif
   Music.Volume = 10
-  
+
   ' Set the focus on the board
   Board.SetFocus()
-  
+
 End
 
 ' Things that will happen when the pause button is clicked
 Public Sub PauseButton_Click()
 
   If (Clock.Enabled) Then
-      'Pause when playing
-      PauseButton.Text = "Continue"
-      StatusLabel.Text = "PAUSE"
-      Clock.Stop()
-      Music.Pause()
+    'Pause when playing
+    PauseButton.Text = "Continue"
+    StatusLabel.Text = "PAUSE"
+    Clock.Stop()
+    Music.Pause()
   Else
-      'Continue when pausing
-      PauseButton.Text = "Pause"
-      Clock.Start()
-      Music.Play(-1)
-      ' Clear the status label
-      StatusLabel.Text = ""
-      ' Set the current key to "" to stop the player when continue if the player was moving before
-      currentKey = ""
-      Board.SetFocus()  
+    'Continue when pausing
+    PauseButton.Text = "Pause"
+    Clock.Start()
+    Music.Play(-1)
+    ' Clear the status label
+    StatusLabel.Text = ""
+    ' Set the current key to "" to stop the player when continue if the player was moving before
+    currentKey = ""
+    Board.SetFocus()
   Endif
-    
 
 End
 
 Public Sub Board_Draw()
+
   Dim i As Integer
-  
+
   Paint.DrawImage(backgroundImage, 0, 0, Board.Width, Board.Height)
-  
+
   ' Use for to paint all arrows from the array
   For i = 0 To arrowArray.Length - 1
     arrowArray[i].paintArrow(Board)
   Next
-  
+
   ' Paint the player if exists to avoid errors
   If (player <> Null) Then
     player.paintPlayer(Board)
   Endif
-  
+
   ' Paint circles if exist at least 1
-  If (circle <> Null) Then 
+  If (circle <> Null) Then
     ' This lines are for painting an entire array of circles
     For i = 0 To circleArray.Length - 1
       circleArray[i].paintCircle(Board)
     Next
   Endif
-  
+
   If (logoImage <> Null) Then
     Paint.DrawImage(logoImage, (Board.Width / 2) - (556 / 2), (Board.Height / 2) - (330 / 2))
   Endif
-  
+
 End
 
 ' Controller for keys pressed
 Public Sub Board_KeyPress()
- ' Assing the key value (uppercase) to the previous variable
+  ' Assing the key value (uppercase) to the previous variable
+
   currentKey = UCase$(Key.Text)
-    
+
   ' If the key is "W" create an arrow and add it to the arrow array
-  If (currentKey = "W" And arrowArray.Length < 2) Then 
+  If (currentKey = "W" And arrowArray.Length < 2) Then
     player.shootArrow(arrowArray)
   Endif
+
 End
 
 Public Sub Board_KeyRelease()
-  
+
   ' When you release any key -> clear the currentKey
   currentKey = ""
-  
+
 End
 
-
 Public Sub Clock_Timer()
-  
+
   player.Move(Board, currentKey)
-  
+
   createCircles()
-  
+
   setMaxCircleSpeedY()
-  
+
   checkArrowCircleCollisions()
-  
+
   checkIfPlayerIsDead()
-  
+
   ' Increase the circle summon time in 1
   circleSummonTime += 1
-  
+
   ' Refresh the board to make the changes to take effect
   Board.Refresh()
 
@@ -175,37 +176,37 @@ End
 
 ' Return the max speed in Y of all circles
 Public Function getMaxCircleSpeedY() As Float
-  
+
   Return maxCircleSpeedY
-  
+
 End
 
 Public Function getBoardWidth() As Integer
-  
+
   Return Board.Width
-  
+
 End
 
 Public Function getBoardHeight() As Integer
-  
+
   Return Board.Height
-  
+
 End
 
 Public Sub createSounds(sound As Sound)
-    
+
   ' Reset the current channel index if it reaches the max index
-  If (currentChannelAvailable > 31) Then 
+  If (currentChannelAvailable > 31) Then
     currentChannelAvailable = 0
   Endif
-  
+
   If (Channels[currentChannelAvailable] <> Null) Then
     Channels[currentChannelAvailable].Stop()
     Channels[currentChannelAvailable].Play(sound)
-  Endif 
-  
+  Endif
+
   currentChannelAvailable += 1
-  
+
 End
 
 ' Create 2 small circles in the position where the original circle was
@@ -214,30 +215,30 @@ Private Sub divideCircle(circle As Circle, index As Integer)
   Dim newCircle1 As Circle
   Dim newCircle2 As Circle
   Dim newDiameter As Integer
-  
+
   newDiameter = circle.getDiameter() / 2
-  
+
   ' Remove the circle from the array. This won't affect to the following steps because we also have the circle as a parameter
   circleArray.Remove(index)
-  
+
   If (newDiameter >= 25) Then           ' <- The default diameter is 100, so 25 allow me to create up to 3 different sizes of circles
     newCircle1 = New Circle(circle.getX() - circle.getDiameter(), circle.getY(), newDiameter)
     newCircle2 = New Circle(circle.getX(), circle.getY(), newDiameter)
-    
+
     ' Check the vertical speed of the original circle before applying the speed (movement) to the new circles
     If (circle.getSpeedY() < 0) Then
       newCircle1.setSpeedY(circle.getSpeedY())
       newCircle2.setSpeedY(circle.getSpeedY())
-    Else 
+    Else
       newCircle1.setSpeedY(-circle.getSpeedY())
       newCircle2.setSpeedY(-circle.getSpeedY())
     Endif
-    
+
     ' Check the horizontal speed to make divided circles go to diferent directions
     If (circle.getSpeedX() < 0) Then
       newCircle1.setSpeedX(circle.getSpeedX())
       newCircle2.setSpeedX(-circle.getSpeedX())
-    Else 
+    Else
       newCircle1.setSpeedX(-circle.getSpeedX())
       newCircle2.setSpeedX(circle.getSpeedX())
     Endif
@@ -246,61 +247,62 @@ Private Sub divideCircle(circle As Circle, index As Integer)
     circleArray.Add(newCircle1, circleArray.Length - 1)
     circleArray.Add(newCircle2, circleArray.Length - 1)
   Endif
+
 End
 
-
-
 Private Sub createCircles()
-  
+
   ' The following lines create a lot of circles
   If (circleSummonTime = 100) Then
-    
+
     ' Limit the amount of circle in the array to avoid crashs due to exceed the sound channels limits
     'If (circleArray.Length < 5) Then
-      ' Create a circle and add it to the circle array
-      circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
-      circleArray.Add(circle)
+    ' Create a circle and add it to the circle array
+    circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
+    circleArray.Add(circle)
     'Endif
 
     ' Set the summon time to 0
     circleSummonTime = 0
   Endif
-  
+
 End
 
 ' Set the max speed in Y of all circles
 Private Sub setMaxCircleSpeedY()
+
   Dim i As Integer
-  
+
   For i = 0 To circleArray.Length - 1
     If (circleArray[i].getSpeedY() > maxCircleSpeedY) Then
       maxCircleSpeedY = circleArray[i].getSpeedY()
     Endif
   Next
+
 End
 
 Private Function checkArrowCircleCollisions() As Integer
-  
+
   Dim i As Integer
   Dim j As Integer
 
-  ' If an arrow exist, "shoot it" (move it to the top of the board) 
-  If (arrowArray.Length <> 0) Then 
-    
+  ' If an arrow exist, "shoot it" (move it to the top of the board)
+  If (arrowArray.Length <> 0) Then
+
     i = 0
     While (i < arrowArray.Length)
       ' Move an arrow from the array
       arrowArray[i].Move()
-      
+
       ' Once the arrow hit the top of the board, remove it from the array to make it dissapear
-      If (arrowArray[i].hitBorder() = True) Then 
+      If (arrowArray[i].hitBorder() = True) Then
         arrowArray.Pop() ' <- The first arrow to hit the border will be ALWAYS the last one in the array, so we can use Pop
-      Else 
+      Else
         ' If the arrow hit a circle, the circle will dissapear (for now...) and the arrow will be destroyed
         j = 0
         While (j < circleArray.Length And arrowArray.Length > 0)
           If (arrowArray[i].hitCircles(circleArray[j]) = True) Then
-            
+
             ' Divide the circle and destroy the arrow
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
@@ -310,19 +312,20 @@ Private Function checkArrowCircleCollisions() As Integer
           Endif
           ' Add 1 to the counter
           j += 1
-        Wend 
+        Wend
 
         ' Add 1 to the counter
         i += 1
       Endif
-    Wend    
+    Wend
   Endif
-  
+
 End
 
 Private Sub checkIfPlayerIsDead()
+
   Dim i As Integer
-  
+
   ' Check if the player is dead or not. If not move the circles
   For i = 0 To circleArray.Length - 1
     If (player.isDead(circleArray[i]) = True) Then
@@ -334,14 +337,12 @@ Private Sub checkIfPlayerIsDead()
       logoImage = Image.Load("./sprites/game_over_image.png")
       StartButton.Enabled = True
       PauseButton.Enabled = False
-    Else 
+    Else
       circleArray[i].Move(Board)
     Endif
   Next
-  
+
 End
-
-
 
 ' +++++++++++++++++++++++++++++++++++++++ NOTES AND BUGS ++++++++++++++++++++++++++++++++++++++++++++++
 '
@@ -359,9 +360,8 @@ End
 '   solution could be check if the original circle speed in Y is positive or negative and then change the speed in the
 '   little ones.
 '
-' - [SOLVED] The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost 
+' - [SOLVED] The player sometimes dead if circle is near it because the hitbox of the circles is a square and there are a lot of ghost
 '   hitbox
 '
 ' - [SOLVED] The player gain speed when keep presing a move key for a while
 ' - [SOLVED] If the player is moving and pause the game, when continue the player keep moving without pressing any key
-

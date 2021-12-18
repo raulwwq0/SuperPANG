@@ -7,48 +7,45 @@ Private posX As Integer
 Private posY As Integer
 Private size As Integer
 
-
-
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Integer, y As Integer, s As Integer)
-  
+
   posX = x
   posY = y
   size = s
-  
+
 End
 
 ' Paint arrow parts
 Public Sub paintPart(board As DrawingArea, img As Image)
-  
+
   Paint.Begin(board)
   Paint.DrawImage(img, posX, posY, size, size)
   Paint.Fill()
   Paint.End
-  
+
 End
 
 ' Getters
 ' Get pos x
 Public Function getX() As Integer
-  
+
   Return posX
-  
+
 End
 
 ' Get pos y
 Public Function getY() As Integer
-  
+
   Return posY
-  
+
 End
 
 ' Get size
 Public Function getSize() As Integer
-  
-  Return size
-  
-End
 
+  Return size
+
+End

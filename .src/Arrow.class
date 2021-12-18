@@ -19,114 +19,113 @@ Private arrowRope2 As Image
 Private circlePopSound As Sound
 Private arrowShootSound As Sound
 
-
 ' Behaviour +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ' Builder
 Public Sub _new(x As Integer, y As Integer, s As Integer)
-  
+
   posX = x
   posY = y
   size = s
-  
+
   ' Load all the images
   arrowTipImage = Image.Load("./sprites/arrow/arrow_tip.png")
   arrowRope0 = Image.Load("./sprites/arrow/arrow_rope_0.png")
   arrowRope1 = Image.Load("./sprites/arrow/arrow_rope_1.png")
   arrowRope2 = Image.Load("./sprites/arrow/arrow_rope_2.png")
-  
+
   circlePopSound = Sound.Load("./sounds/circle_pop.mp3")
   arrowShootSound = Sound.Load("./sounds/arrow_shoot.mp3")
-    
+
   createArrow()
-  
+
 End
 
 ' Create the first arrow part
 Private Sub createArrow()
-  
-  Dim firstPart As ArrowPart
-  firstPart = New ArrowPart(posX - (size / 2), posY, size)
-  
-  FMain.createSounds(arrowShootSound)
-  
-  arrowPartArray.Add(firstPart, 0)
-End
 
+  Dim firstPart As ArrowPart
+
+  firstPart = New ArrowPart(posX - (size / 2), posY, size)
+
+  FMain.createSounds(arrowShootSound)
+
+  arrowPartArray.Add(firstPart, 0)
+
+End
 
 ' Move the arrow to the top of the board
 Public Sub Move()
-  
+
   Dim tip As ArrowPart
   Dim newTip As ArrowPart
-  
+
   tip = arrowPartArray[0]
   newTip = New ArrowPart(tip.getX(), tip.getY() - tip.getSize(), tip.getSize())
 
   arrowPartArray.Add(newTip, 0)
-  
+
 End
 
 ' Paint arrow (the arrow hitbox will be a circle, at least for now...)
 Public Sub paintArrow(board As DrawingArea)
+
   Dim i As Integer
-  
+
   For i = 0 To arrowPartArray.Count - 1
     ' If the index is 0 -> the arrow tip
     If (i = 0) Then
       arrowPartArray[i].paintPart(board, arrowTipImage)
-    
-    ' If the index is 1 -> the joint between the tip and the rest of the rope
+
+      ' If the index is 1 -> the joint between the tip and the rest of the rope
     Else If (i = 1)
       arrowPartArray[i].paintPart(board, arrowRope0)
-    ' Else -> the rest of the rope, changing between 2 sprites
-    Else 
+      ' Else -> the rest of the rope, changing between 2 sprites
+    Else
       If (i % 2 == 0) Then
         arrowPartArray[i].paintPart(board, arrowRope1)
-      Else 
+      Else
         arrowPartArray[i].paintPart(board, arrowRope2)
       Endif
     Endif
-    
+
   Next
 
 End
 
 ' Check if an arrow tip hit the top border of the board
 Public Function hitBorder() As Boolean
-  
+
   Dim tip As ArrowPart
   Dim result As Boolean
-  
+
   tip = arrowPartArray[0]
-  
-  If (tip.getY() <= 0) Then 
+
+  If (tip.getY() <= 0) Then
     result = True
-  Else 
+  Else
     result = False
   Endif
-  
+
   Return result
-  
+
 End
 
 ' Check if the arrow part hit a circle
 Public Function hitCircles(circle As Circle) As Boolean
-  
+
   Dim i As Integer
-  
+
   For i = 0 To arrowPartArray.Length - 1
-    If ((arrowPartArray[i].getX() < circle.getX() + circle.getDiameter() And 
-      arrowPartArray[i].getX() + arrowPartArray[i].getSize() > circle.getX()) And
-      (arrowPartArray[i].getY() < circle.getY() + circle.getDiameter() And
-      arrowPartArray[i].getY() + arrowPartArray[i].getSize() > circle.getY())) Then
+    If ((arrowPartArray[i].getX() < circle.getX() + circle.getDiameter() And
+        arrowPartArray[i].getX() + arrowPartArray[i].getSize() > circle.getX()) And
+        (arrowPartArray[i].getY() < circle.getY() + circle.getDiameter() And
+        arrowPartArray[i].getY() + arrowPartArray[i].getSize() > circle.getY())) Then
       FMain.createSounds(circlePopSound)
       Return True
     Endif
   Next
-  
-  
-  Return False
-  
-End
 
+  Return False
+
+End
