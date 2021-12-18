@@ -31,6 +31,7 @@ Public Sub Form_Open()
   ' Load the background image
   backgroundImage = Image.Load("./sprites/background.png")
   
+  Channels.Count = 32
   
   Music.Load("./sounds/opening_song.mp3")
   Music.Play(-1) ' -1 as a parameter of Play indicates an infinite loop where the music will be playing forever until we stop it
@@ -170,7 +171,7 @@ Public Sub Clock_Timer()
   
   ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
-    If (player.isDead(circleArray[i]) = True) Then
+    If (player.isDead(circleArray[i]) = Null) Then
       Clock.Stop()
       Music.Stop()
       Music.Load("./sounds/ending_song.mp3")
@@ -188,11 +189,11 @@ Public Sub Clock_Timer()
   If (circleSummonTime = 100) Then
     
     ' Limit the amount of circle in the array to avoid crashs due to exceed the sound channels limits
-    If (circleArray.Length < 5) Then
+    'If (circleArray.Length < 5) Then
       ' Create a circle and add it to the circle array
       circle = New Circle(Rand(100 - (100 / 3), Board.Width - 100 - (100 / 3)), 100, 100)
       circleArray.Add(circle)
-    Endif
+    'Endif
 
     ' Set the summon time to 0
     circleSummonTime = 0
@@ -293,7 +294,7 @@ End
 Public Sub createSounds(sound As Sound)
 
     
-  If (currentChannelAvailable > 7) Then ' <- Leave channel 6, 7 and 8 empty as backups when there are sounds overloads
+  If (currentChannelAvailable > 31) Then 
     currentChannelAvailable = 0
   Endif
   
