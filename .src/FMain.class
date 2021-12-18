@@ -272,13 +272,7 @@ Private Function checkArrowCircleCollisions() As Integer
   
   Dim i As Integer
   Dim j As Integer
-  
-  ' This var is useful to break the loop
-  Dim currentArrowDestroyed As Boolean
-  
-  ' This variable will be useful to break a loop when the current arrow is destroyed (to avoid out of bounds errors)
-  currentArrowDestroyed = False
-  
+
   ' If an arrow exist, "shoot it" (move it to the top of the board) 
   If (arrowArray.Length <> 0) Then 
     
@@ -299,22 +293,14 @@ Private Function checkArrowCircleCollisions() As Integer
             ' Divide the circle and destroy the arrow
             divideCircle(circleArray[j], j)
             arrowArray.Remove(i)
-            
-            ' Set this var to true because the current arrow was removed from the array
-            currentArrowDestroyed = True
-            
+
             ' Leave the current iteration with break
             Return
           Endif
           ' Add 1 to the counter
           j += 1
         Wend 
-        
-        ' If the current arrow does't exist anymore leave this loop
-        If (currentArrowDestroyed = True) Then
-          currentArrowDestroyed = False
-          Return
-        Endif
+
         ' Add 1 to the counter
         i += 1
       Endif
