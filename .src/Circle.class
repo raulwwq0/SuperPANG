@@ -43,8 +43,7 @@ End
 Public Sub paintCircle(board As DrawingArea)
 
   Paint.Begin(board)
-  Paint.DrawImage(circleSprite, posX - (diameter / 6), posY, diameter + (diameter / 3), diameter + (diameter / 3))
-  Paint.Fill()
+  Paint.DrawImage(circleSprite, posX - (diameter / 6), posY - (diameter / 8), diameter + (diameter / 3), diameter + (diameter / 3))
   Paint.End
 
 End

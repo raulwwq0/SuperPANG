@@ -23,7 +23,6 @@ Public Sub paintPart(board As DrawingArea, img As Image)
 
   Paint.Begin(board)
   Paint.DrawImage(img, posX, posY, size, size)
-  Paint.Fill()
   Paint.End
 
 End

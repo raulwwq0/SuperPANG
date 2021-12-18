@@ -53,7 +53,7 @@ Public Sub StartButton_Click()
   StatusLabel.Text = ""
 
   ' Create the player
-  player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 100, 70, 100)
+  player = New Player(Board.Width / 2 - 30 / 2, Board.Height - 80, 50, 80)
 
   ' Set the summon time to 100 to spawn a circle as soon as the game start
   circleSummonTime = 100

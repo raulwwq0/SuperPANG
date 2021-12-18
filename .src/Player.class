@@ -190,8 +190,7 @@ End
 Public Sub paintPlayer(board As DrawingArea)
 
   Paint.Begin(board)
-  Paint.DrawImage(currentMoveSprite, posX, posY, hitboxWidth, hitboxHeight)
-  Paint.Fill()
+  Paint.DrawImage(currentMoveSprite, posX - 10, posY - 10, hitboxWidth + 20, hitboxHeight + 10)
   Paint.End
 
 End
