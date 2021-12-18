@@ -111,7 +111,6 @@ Public Sub Board_Draw()
   ' Use for to paint all arrows from the array
   For i = 0 To arrowArray.Length - 1
     arrowArray[i].paintArrow(Board)
-    Print arrowArray.Length
   Next
   
   ' Paint the player if exists to avoid errors
@@ -178,6 +177,18 @@ End
 Public Function getMaxCircleSpeedY() As Float
   
   Return maxCircleSpeedY
+  
+End
+
+Public Function getBoardWidth() As Integer
+  
+  Return Board.Width
+  
+End
+
+Public Function getBoardHeight() As Integer
+  
+  Return Board.Height
   
 End
 

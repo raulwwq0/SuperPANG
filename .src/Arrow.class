@@ -89,8 +89,7 @@ Public Sub paintArrow(board As DrawingArea)
     Endif
     
   Next
-  
-  Print arrowPartArray.Length
+
 End
 
 ' Check if an arrow tip hit the top border of the board

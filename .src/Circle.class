@@ -55,13 +55,19 @@ Public Sub Move(board As DrawingArea)
   posX += speedX
   posY += speedY
   speedY += gravity
+  
+  ' Check if the ball is stuck outside the board
+  If (posX < 0) Then
+    posX = 10
+  Else If (posX + diameter > board.Width)
+    posX = board.Width - diameter - 10
+  Endif
 
   ' Check if the circle hit a lateral wall
   If (posX + diameter + (diameter / 6) > board.Width Or posX - (diameter / 6) < 0) Then
     FMain.createSounds(circleBounceSound)
     speedX *= -1
   Endif
-  
   
   ' Check if the circle hit the floor
   If (posY + diameter + (diameter / 3) > board.Height) Then
