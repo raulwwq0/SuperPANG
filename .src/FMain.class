@@ -166,10 +166,7 @@ Public Sub Clock_Timer()
   currentArrowDestroyed = False
   
   player.Move(Board, currentKey)
-  
-  If (currentChannelAvailable > 7) Then
-    currentChannelAvailable = 0
-  Endif
+
   
   ' Check if the player is dead or not. If not move the player
   For i = 0 To circleArray.Length - 1
@@ -246,7 +243,6 @@ Public Sub Clock_Timer()
   
   ' Increase the circle summon time in 1
   circleSummonTime += 1
-  
   ' Refresh the board to make the changes to take effect
   Board.Refresh()
 
@@ -296,11 +292,16 @@ End
 
 Public Sub createSounds(sound As Sound)
 
-  
-  If (Channels[currentChannelAvailable] <> Null) Then
-    Channels[currentChannelAvailable].Play(sound)
+    
+  If (currentChannelAvailable > 7) Then ' <- Leave channel 6, 7 and 8 empty as backups when there are sounds overloads
+    currentChannelAvailable = 0
   Endif
   
+  If (Channels[currentChannelAvailable] <> Null) Then
+    Channels[currentChannelAvailable].Stop()
+    Channels[currentChannelAvailable].Play(sound)
+  Endif
+  Print currentChannelAvailable
   currentChannelAvailable += 1
   
 End
